@@ -1,2 +1,7 @@
 # be-my-guest-backend
-test2
+
+# Install CDK (testing on eu-west-3)
+
+npm install -g aws-cdk
+cdk --version
+
