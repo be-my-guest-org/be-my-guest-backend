@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "cdk-dynamo-table-viewer": "^0.2.0"
-  }
-}
