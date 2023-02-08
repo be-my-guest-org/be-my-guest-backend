@@ -10,6 +10,5 @@
   "configuration": "Release",
   "s3-prefix": "BeMyGuest.Api/",
   "template": "serverless.template",
-  "template-parameters": "",
-  "docker-host-build-output-dir": "./bin/Release/lambda-publish"
+  "template-parameters": ""
 }

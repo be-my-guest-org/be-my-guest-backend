@@ -8,13 +8,9 @@
     "AspNetCoreFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "PackageType": "Image",
-        "ImageConfig": {
-          "Command": [
-            "BeMyGuest.Api::BeMyGuest.Api.LambdaEntryPoint::FunctionHandlerAsync"
-          ]
-        },
-        "ImageUri": "",
+        "Handler": "BeMyGuest.Api",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
         "Role": null,
@@ -37,11 +33,6 @@
             }
           }
         }
-      },
-      "Metadata": {
-        "Dockerfile": "Dockerfile",
-        "DockerContext": ".",
-        "DockerTag": ""
       }
     }
   },
