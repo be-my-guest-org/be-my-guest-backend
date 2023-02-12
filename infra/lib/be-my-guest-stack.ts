@@ -6,9 +6,13 @@ import {
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
+import { SecretValue } from "aws-cdk-lib";
 import {
   AccountRecovery,
+  ProviderAttribute,
   UserPool,
+  UserPoolClientIdentityProvider,
+  UserPoolIdentityProviderGoogle,
   VerificationEmailStyle,
 } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
@@ -76,6 +80,13 @@ export class BeMyGuestStack extends cdk.Stack {
       value: httpApi.url!,
     });
 
+    const secrets = new cdk.aws_secretsmanager.Secret(this, "be-my-guest-secrets", {
+      description: "Be My Guest secrets",
+      secretObjectValue: {
+        googleClientSecret: SecretValue.unsafePlainText(""),
+      }
+    });
+
     const cognitoUserPool = new UserPool(this, "be-my-guest-user-pool", {
       signInAliases: { email: true },
       selfSignUpEnabled: true,
@@ -88,8 +99,8 @@ export class BeMyGuestStack extends cdk.Stack {
         emailStyle: VerificationEmailStyle.LINK,
       },
       standardAttributes: {
-        familyName: { required: true, mutable: false },
-        givenName: { required: true, mutable: false },
+        familyName: { required: false, mutable: false },
+        givenName: { required: false, mutable: false },
         address: { required: false, mutable: true },
       },
       passwordPolicy: {
@@ -115,7 +126,23 @@ export class BeMyGuestStack extends cdk.Stack {
       },
     });
 
-    cognitoUserPool.addClient("app-client", {
+    const userPoolIdentityProviderGoogle = new UserPoolIdentityProviderGoogle(
+      this,
+      "be-my-guest-user-pool-idp-google",
+      {
+        clientId:
+          "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com",
+        clientSecret: "undefined",
+        // clientSecretValue: secrets.secretValueFromJson("googleClientSecret"),
+        userPool: cognitoUserPool,
+        scopes: ["profile", "email", "openid"],
+        attributeMapping: {
+          email: ProviderAttribute.GOOGLE_EMAIL,
+        },
+      }
+    );
+
+    const client = cognitoUserPool.addClient("app-client", {
       authFlows: {
         userSrp: true,
         custom: true,
@@ -127,6 +154,9 @@ export class BeMyGuestStack extends cdk.Stack {
           implicitCodeGrant: true,
         },
       },
+      supportedIdentityProviders: [UserPoolClientIdentityProvider.GOOGLE],
     });
+
+    client.node.addDependency(userPoolIdentityProviderGoogle);
   }
 }
