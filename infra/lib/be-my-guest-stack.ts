@@ -80,6 +80,7 @@ export class BeMyGuestStack extends cdk.Stack {
       signInAliases: { email: true },
       selfSignUpEnabled: true,
       autoVerify: { email: true },
+
       userVerification: {
         emailSubject: "You need to verify your email",
         emailBody:
@@ -116,7 +117,15 @@ export class BeMyGuestStack extends cdk.Stack {
 
     cognitoUserPool.addClient("app-client", {
       authFlows: {
-        userPassword: true,
+        userSrp: true,
+        custom: true,
+      },
+      oAuth: {
+        callbackUrls: ["https://www.example.com/cb"],
+        logoutUrls: ["https://www.example.com/signout"],
+        flows: {
+          implicitCodeGrant: true,
+        },
       },
     });
   }
