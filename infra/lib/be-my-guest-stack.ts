@@ -6,7 +6,7 @@ import {
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
-import { SecretValue } from "aws-cdk-lib";
+import { RemovalPolicy, SecretValue } from "aws-cdk-lib";
 import {
   AccountRecovery,
   ProviderAttribute,
@@ -80,12 +80,16 @@ export class BeMyGuestStack extends cdk.Stack {
       value: httpApi.url!,
     });
 
-    const secrets = new cdk.aws_secretsmanager.Secret(this, "be-my-guest-secrets", {
-      description: "Be My Guest secrets",
-      secretObjectValue: {
-        googleClientSecret: SecretValue.unsafePlainText(""),
+    const secrets = new cdk.aws_secretsmanager.Secret(
+      this,
+      "be-my-guest-secrets",
+      {
+        description: "Be My Guest secrets",
+        secretObjectValue: {
+          googleClientSecret: SecretValue.unsafePlainText("dummy-google-client-secret"),
+        },
       }
-    });
+    );
 
     const cognitoUserPool = new UserPool(this, "be-my-guest-user-pool", {
       signInAliases: { email: true },
@@ -110,6 +114,7 @@ export class BeMyGuestStack extends cdk.Stack {
         requireSymbols: true,
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
+      removalPolicy: RemovalPolicy.DESTROY,
 
       // custom_attributes : {
       //     "tenant_id": cognito.StringAttribute(min_len=10, max_len=15, mutable=False),
@@ -132,8 +137,9 @@ export class BeMyGuestStack extends cdk.Stack {
       {
         clientId:
           "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com",
-        clientSecret: "undefined",
-        // clientSecretValue: secrets.secretValueFromJson("googleClientSecret"),
+        // clientSecret: "undefined",
+        clientSecretValue: secrets.secretValueFromJson("googleClientSecret"),
+        // clientSecretValue: secrets.secretValue,
         userPool: cognitoUserPool,
         scopes: ["profile", "email", "openid"],
         attributeMapping: {
