@@ -13,6 +13,18 @@ public class CalculatorController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet("echo")]
+    public int Echo()
+    {
+        return 420;
+    }
+
+    [HttpGet("echo2/{x}")]
+    public string Echo2(string x)
+    {
+        return x;
+    }
+
     /// <summary>
     /// Perform x + y
     /// </summary>
