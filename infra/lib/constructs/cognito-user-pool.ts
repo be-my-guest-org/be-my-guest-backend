@@ -1,5 +1,4 @@
-import * as cdk from "aws-cdk-lib";
-import { RemovalPolicy, SecretValue } from "aws-cdk-lib";
+import { RemovalPolicy } from "aws-cdk-lib";
 import {
   AccountRecovery,
   ProviderAttribute,
@@ -8,26 +7,15 @@ import {
   UserPoolIdentityProviderGoogle,
   VerificationEmailStyle,
 } from "aws-cdk-lib/aws-cognito";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
+import { Constants } from "../constants/constants";
 
 export interface ApiProps {}
 
 export class CognitoUserPool extends Construct {
   constructor(scope: Construct, id: string, props?: ApiProps) {
     super(scope, id);
-
-    const secrets = new cdk.aws_secretsmanager.Secret(
-      this,
-      "be-my-guest-secrets",
-      {
-        description: "Be My Guest secrets",
-        secretObjectValue: {
-          googleClientSecret: SecretValue.unsafePlainText(
-            "dummy-google-client-secret"
-          ),
-        },
-      }
-    );
 
     const cognitoUserPool = new UserPool(this, "be-my-guest-user-pool", {
       signInAliases: { email: true },
@@ -53,14 +41,6 @@ export class CognitoUserPool extends Construct {
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,
-
-      // custom_attributes : {
-      //     "tenant_id": cognito.StringAttribute(min_len=10, max_len=15, mutable=False),
-      //     "created_at": cognito.DateTimeAttribute(),
-      //     "employee_id": cognito.NumberAttribute(min=1, max=100, mutable=False),
-      //     "is_admin": cognito.BooleanAttribute(mutable=True),
-      // account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
-      // removal_policy=core.RemovalPolicy.DESTROY
     });
 
     cognitoUserPool.addDomain("cognito-domain", {
@@ -75,9 +55,11 @@ export class CognitoUserPool extends Construct {
       {
         clientId:
           "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com",
-        // clientSecret: "undefined",
-        clientSecretValue: secrets.secretValueFromJson("googleClientSecret"),
-        // clientSecretValue: secrets.secretValue,
+        clientSecretValue: Secret.fromSecretNameV2(
+          this,
+          "secret-id",
+          Constants.SECRETS_NAME
+        ).secretValueFromJson(Constants.GOOGLE_CLIENT_SECRET_NAME),
         userPool: cognitoUserPool,
         scopes: ["profile", "email", "openid"],
         attributeMapping: {
