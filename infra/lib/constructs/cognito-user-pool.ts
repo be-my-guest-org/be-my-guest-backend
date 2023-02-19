@@ -14,6 +14,9 @@ import { Constants } from "../constants/constants";
 export interface ApiProps {}
 
 export class CognitoUserPool extends Construct {
+  public readonly userPoolId: string;
+  public readonly userPoolAppIntegrationClientId: string;
+
   constructor(scope: Construct, id: string, props?: ApiProps) {
     super(scope, id);
 
@@ -42,6 +45,8 @@ export class CognitoUserPool extends Construct {
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,
     });
+
+    this.userPoolId = cognitoUserPool.userPoolId;
 
     cognitoUserPool.addDomain("cognito-domain", {
       cognitoDomain: {
@@ -82,6 +87,8 @@ export class CognitoUserPool extends Construct {
       },
       supportedIdentityProviders: [UserPoolClientIdentityProvider.GOOGLE],
     });
+
+    this.userPoolAppIntegrationClientId = client.userPoolClientId;
 
     client.node.addDependency(userPoolIdentityProviderGoogle);
   }

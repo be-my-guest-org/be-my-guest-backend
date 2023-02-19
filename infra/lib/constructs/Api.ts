@@ -2,21 +2,38 @@ import {
   CorsHttpMethod,
   HttpApi,
   HttpMethod,
+  HttpNoneAuthorizer,
 } from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-export interface ApiProps {}
+export interface ApiProps {
+  readonly userPoolId: string;
+  readonly userPoolAppIntegrationClientId: string;
+}
 
 export class Api extends Construct {
-  constructor(scope: Construct, id: string, props?: ApiProps) {
+  constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id);
 
     const beMyGuestLambda = new DotNetFunction(this, "BeMyGuest", {
       projectDir: "../BeMyGuest/BeMyGuest.Api/src/BeMyGuest.Api",
     });
+
+    const issuerUrl = `https://cognito-idp.${
+      cdk.Stack.of(this).region
+    }.amazonaws.com/${props.userPoolId}`;
+
+    const cognitoJwtAuthorizer = new HttpJwtAuthorizer(
+      "cognito-jwt-authorizer",
+      issuerUrl,
+      {
+        jwtAudience: [props.userPoolAppIntegrationClientId],
+      }
+    );
 
     const httpApi = new HttpApi(this, "be-my-guest", {
       description: "Be my guest API gateway",
@@ -38,6 +55,7 @@ export class Api extends Construct {
         allowCredentials: true,
         allowOrigins: ["http://localhost:3000"],
       },
+      defaultAuthorizer: cognitoJwtAuthorizer,
     });
 
     const integration = new HttpLambdaIntegration(
@@ -55,6 +73,7 @@ export class Api extends Construct {
       path: "/calculator/add/{a}/{b}",
       methods: [HttpMethod.GET],
       integration: integration,
+      authorizer: new HttpNoneAuthorizer()
     });
 
     httpApi.addRoutes({
@@ -63,7 +82,7 @@ export class Api extends Construct {
       integration: integration,
     });
 
-    httpApi.addRoutes({
+    const echo2Route = httpApi.addRoutes({
       path: "/calculator/echo2/{x}",
       methods: [HttpMethod.GET],
       integration: integration,
