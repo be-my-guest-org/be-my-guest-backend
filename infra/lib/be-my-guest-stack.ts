@@ -7,7 +7,10 @@ export class BeMyGuestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    new Api(this, "Api");
-    new CognitoUserPool(this, "UserPool");
+    const userPool = new CognitoUserPool(this, "UserPool");
+    new Api(this, "Api", {
+      userPoolId: userPool.userPoolId,
+      userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
+    });
   }
 }
