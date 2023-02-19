@@ -8,7 +8,9 @@ export class BeMyGuestStack extends cdk.Stack {
     super(scope, id, props);
 
     const userPool = new CognitoUserPool(this, "UserPool");
-    new Api(this, "Api");
-    
+    new Api(this, "Api", {
+      userPoolId: userPool.userPoolId,
+      userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
+    });
   }
 }
