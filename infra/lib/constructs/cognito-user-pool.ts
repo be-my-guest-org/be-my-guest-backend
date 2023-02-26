@@ -11,13 +11,13 @@ import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Constants } from "../constants/constants";
 
-export interface ApiProps {}
+export interface CognitoUserPoolProps {}
 
 export class CognitoUserPool extends Construct {
   public readonly userPoolId: string;
   public readonly userPoolAppIntegrationClientId: string;
 
-  constructor(scope: Construct, id: string, props?: ApiProps) {
+  constructor(scope: Construct, id: string, props?: CognitoUserPoolProps) {
     super(scope, id);
 
     const cognitoUserPool = new UserPool(this, "be-my-guest-user-pool", {
