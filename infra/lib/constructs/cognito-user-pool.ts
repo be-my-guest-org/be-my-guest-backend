@@ -7,11 +7,14 @@ import {
   UserPoolIdentityProviderGoogle,
   VerificationEmailStyle,
 } from "aws-cdk-lib/aws-cognito";
+import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Constants } from "../constants/constants";
 
-export interface CognitoUserPoolProps {}
+export interface CognitoUserPoolProps {
+  readonly postConfirmationLambda: IFunction;
+}
 
 export class CognitoUserPool extends Construct {
   public readonly userPoolId: string;
@@ -41,6 +44,9 @@ export class CognitoUserPool extends Construct {
         requireLowercase: true,
         requireUppercase: false,
         requireSymbols: true,
+      },
+      lambdaTriggers: {
+        postConfirmation: props?.postConfirmationLambda,
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,

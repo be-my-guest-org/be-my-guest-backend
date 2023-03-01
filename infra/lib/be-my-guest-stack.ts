@@ -1,3 +1,4 @@
+import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Api } from "./constructs/api";
@@ -8,7 +9,15 @@ export class BeMyGuestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const userPool = new CognitoUserPool(this, "UserPool");
+    const postUserConfirmationLambda = new DotNetFunction(this, "post-user-confirmation", {
+      projectDir:
+        "../PostConfirmationLambda/PostConfirmationLambda/src/PostConfirmationLambda",
+    });
+
+    const userPool = new CognitoUserPool(this, "UserPool", {
+      postConfirmationLambda: postUserConfirmationLambda,
+    });
+
     new Api(this, "Api", {
       userPoolId: userPool.userPoolId,
       userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
