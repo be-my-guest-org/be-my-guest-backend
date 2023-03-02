@@ -75,6 +75,11 @@ export class CognitoUserPool extends Construct {
         scopes: ["profile", "email", "openid"],
         attributeMapping: {
           email: ProviderAttribute.GOOGLE_EMAIL,
+          familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
+          givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
+          gender: ProviderAttribute.GOOGLE_GENDER,
+          birthdate: ProviderAttribute.GOOGLE_BIRTHDAYS,
+          phoneNumber: ProviderAttribute.GOOGLE_PHONE_NUMBERS
         },
       }
     );
