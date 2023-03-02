@@ -6,9 +6,9 @@ import {
 } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
+import { DotNetLambdaFunction } from "./dot-net-lambda-function";
 
 export interface ApiProps {
   readonly userPoolId: string;
@@ -19,9 +19,13 @@ export class Api extends Construct {
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id);
 
-    const beMyGuestLambda = new DotNetFunction(this, "BeMyGuest", {
-      projectDir: "../BeMyGuest/BeMyGuest.Api/src/BeMyGuest.Api",
-    });
+    const beMyGuestLambda = new DotNetLambdaFunction(
+      this,
+      "be-my-guest-lambda",
+      {
+        projectDir: "../BeMyGuest/BeMyGuest.Api/src/BeMyGuest.Api",
+      }
+    );
 
     const issuerUrl = `https://cognito-idp.${
       cdk.Stack.of(this).region
@@ -60,7 +64,7 @@ export class Api extends Construct {
 
     const integration = new HttpLambdaIntegration(
       "integration",
-      beMyGuestLambda
+      beMyGuestLambda.lambdaFunction
     );
 
     httpApi.addRoutes({
@@ -73,7 +77,7 @@ export class Api extends Construct {
       path: "/calculator/add/{a}/{b}",
       methods: [HttpMethod.GET],
       integration: integration,
-      authorizer: new HttpNoneAuthorizer()
+      authorizer: new HttpNoneAuthorizer(),
     });
 
     httpApi.addRoutes({

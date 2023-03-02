@@ -1,10 +1,15 @@
 import { Construct } from "constructs";
 
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
+import { IGrantable } from "aws-cdk-lib/aws-iam";
 
-export interface DynamoDbTableProps {}
+export interface DynamoDbTableProps {
+  readonly readWriteDataGrantees: IGrantable[];
+}
 
 export class DynamoDbTable extends Construct {
+  public readonly tableName: string;
+
   constructor(scope: Construct, id: string, props?: DynamoDbTableProps) {
     super(scope, id);
 
@@ -22,5 +27,11 @@ export class DynamoDbTable extends Construct {
     table
       .autoScaleWriteCapacity({ minCapacity: 1, maxCapacity: 10 })
       .scaleOnUtilization({ targetUtilizationPercent: 70 });
+
+    props?.readWriteDataGrantees.forEach((grantee) => {
+      table.grantReadWriteData(grantee);
+    });
+
+    this.tableName = table.tableName;
   }
 }
