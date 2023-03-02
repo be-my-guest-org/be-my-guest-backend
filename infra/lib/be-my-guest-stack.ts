@@ -1,8 +1,8 @@
-import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Api } from "./constructs/api";
 import { CognitoUserPool } from "./constructs/cognito-user-pool";
+import { DotNetLambdaFunction } from "./constructs/dot-net-lambda-function";
 import { DynamoDbTable } from "./constructs/dynamo-db-table";
 
 export class BeMyGuestStack extends cdk.Stack {
@@ -11,7 +11,7 @@ export class BeMyGuestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const postUserConfirmationLambda = new DotNetFunction(
+    const postUserConfirmationLambda = new DotNetLambdaFunction(
       this,
       "post-user-confirmation",
       {
@@ -21,7 +21,7 @@ export class BeMyGuestStack extends cdk.Stack {
     );
 
     const userPool = new CognitoUserPool(this, "UserPool", {
-      postConfirmationLambda: postUserConfirmationLambda,
+      postConfirmationLambda: postUserConfirmationLambda.lambdaFunction,
     });
 
     new Api(this, "Api", {
@@ -30,7 +30,7 @@ export class BeMyGuestStack extends cdk.Stack {
     });
 
     const dynamoDbTable = new DynamoDbTable(this, "Table", {
-      readWriteDataGrantees: [postUserConfirmationLambda],
+      readWriteDataGrantees: [postUserConfirmationLambda.lambdaFunction],
     });
 
     postUserConfirmationLambda.addEnvironment(

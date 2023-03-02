@@ -13,7 +13,7 @@ public class Function
 {
     private const string TableNameEnvVar = "TABLE_NAME";
 
-    public void FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
+    public async Task FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
     {
         context.Logger.LogInformation($"User signup event received {JsonSerializer.Serialize(postUserConfirmationEvent)}");
 
@@ -29,6 +29,8 @@ public class Function
             ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
         };
 
-        dynamoDbClient.PutItemAsync(createItemRequest);
+        var response = await dynamoDbClient.PutItemAsync(createItemRequest);
+
+        context.Logger.LogInformation($"Response from dynamoDb {response.HttpStatusCode}");
     }
 }

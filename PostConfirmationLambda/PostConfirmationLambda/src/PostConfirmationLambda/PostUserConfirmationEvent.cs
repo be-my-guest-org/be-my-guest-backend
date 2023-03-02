@@ -18,7 +18,8 @@ public record PostUserConfirmationEvent(
 }
 
 public record Request(
-    [property: JsonPropertyName("userAttributes")] UserAttributes UserAttributes);
+    [property: JsonPropertyName("userAttributes")]
+    UserAttributes UserAttributes);
 
 public record UserAttributes(
     [property: JsonPropertyName("email")] string Email);
