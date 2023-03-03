@@ -3,9 +3,10 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
 namespace PostConfirmationLambda;
 
@@ -15,7 +16,8 @@ public class Function
 
     public async Task FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
     {
-        context.Logger.LogInformation($"User signup event received {JsonSerializer.Serialize(postUserConfirmationEvent)}");
+        context.Logger.LogInformation(
+            $"User signup event received {JsonSerializer.Serialize(postUserConfirmationEvent)}");
 
         var dynamoDbClient = new AmazonDynamoDBClient();
 
