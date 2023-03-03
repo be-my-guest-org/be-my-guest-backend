@@ -14,10 +14,14 @@ public class Function
 {
     private const string TableNameEnvVar = "TABLE_NAME";
 
-    public async Task FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
+    // public async Task<PostUserConfirmationEvent> FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
+
+    public JsonElement FunctionHandler(JsonElement postConfirmationEvent, ILambdaContext context)
     {
         context.Logger.LogInformation(
-            $"User signup event received {JsonSerializer.Serialize(postUserConfirmationEvent)}");
+            $"User signup event received {JsonSerializer.Serialize(postConfirmationEvent)}");
+
+        var postUserConfirmationEvent = JsonSerializer.Deserialize<PostUserConfirmationEvent>(postConfirmationEvent)!;
 
         var dynamoDbClient = new AmazonDynamoDBClient();
 
@@ -26,13 +30,14 @@ public class Function
         var userAttributes = Document.FromJson(serializedUserDto).ToAttributeMap();
         var createItemRequest = new PutItemRequest
         {
-            TableName = Environment.GetEnvironmentVariable(TableNameEnvVar),
-            Item = userAttributes,
-            ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
+            TableName = Environment.GetEnvironmentVariable(TableNameEnvVar), Item = userAttributes,
+            // ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
         };
 
-        var response = await dynamoDbClient.PutItemAsync(createItemRequest);
+        var response = dynamoDbClient.PutItemAsync(createItemRequest).Result;
 
         context.Logger.LogInformation($"Response from dynamoDb {response.HttpStatusCode}");
+
+        return postConfirmationEvent;
     }
 }
