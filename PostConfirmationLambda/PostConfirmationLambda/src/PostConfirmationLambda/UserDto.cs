@@ -3,13 +3,13 @@
 namespace PostConfirmationLambda;
 
 public record UserDto(
-    [property: JsonPropertyName("username")]
+    [property: JsonIgnore]
     string Username,
     [property: JsonPropertyName("firstName")]
     string FirstName,
     [property: JsonPropertyName("lastName")]
     string LastName,
-    [property: JsonIgnore]
+    [property: JsonPropertyName("email")]
     string Email,
     [property: JsonIgnore]
     string Sub,
@@ -23,5 +23,5 @@ public record UserDto(
     public string Pk => $"USER#{Sub}";
 
     [JsonPropertyName("sk")]
-    public string Sk => $"PROFILE#{Email}";
+    public string Sk => $"PROFILE#{Username}";
 }
