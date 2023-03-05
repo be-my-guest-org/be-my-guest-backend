@@ -1,9 +1,10 @@
-﻿namespace BeMyGuest.Application.Users.Queries.GetUser;
+﻿using BeMyGuest.Domain.Users;
+using OneOf;
+using OneOf.Types;
 
-public record GetUserResult(
-    string UserId,
-    string Email,
-    string FirstName,
-    string LastName,
-    DateTime CreatedAt,
-    DateTime UpdatedAt);
+namespace BeMyGuest.Application.Users.Queries.GetUser;
+
+[GenerateOneOf]
+public partial class GetUserResult : OneOfBase<User, NotFound>
+{
+}

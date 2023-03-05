@@ -26,8 +26,10 @@ public class UsersController : ControllerBase
     {
         var query = _mapper.Map<GetUserQuery>(request);
 
-        await _sender.Send(query);
+        var result = await _sender.Send(query);
 
-        return Ok();
+        return result.Match<IActionResult>(
+            user => Ok(_mapper.Map<GetUserResponse>(user)),
+            _ => NotFound());
     }
 }

@@ -1,5 +1,5 @@
 ﻿using BeMyGuest.Domain.Users;
-using BeMyGuest.Infrastructure.Persistence.Repositories;
+using BeMyGuest.Infrastructure.Persistence.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeMyGuest.Infrastructure;

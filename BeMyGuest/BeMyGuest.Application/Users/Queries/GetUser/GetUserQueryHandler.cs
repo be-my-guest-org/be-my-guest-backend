@@ -1,6 +1,7 @@
 ﻿using BeMyGuest.Domain.Users;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using OneOf.Types;
 
 namespace BeMyGuest.Application.Users.Queries.GetUser;
 
@@ -19,7 +20,13 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, GetUserResult>
     {
         _logger.LogInformation("Received get user query for user {Username}", request.Username);
 
-        return await Task.FromResult(
-            new GetUserResult("test", "test", "test", "test", DateTime.UtcNow, DateTime.UtcNow));
+        var user = await _userRepository.GetUser(request.UserId, request.Username);
+
+        if (user is null)
+        {
+            return new NotFound();
+        }
+
+        return user;
     }
 }

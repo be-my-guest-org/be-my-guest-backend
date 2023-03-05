@@ -4,7 +4,7 @@ using Mapster;
 
 namespace BeMyGuest.Api.Mapping;
 
-public class AuthenticationMappingConfig : IRegister
+public class UserMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
