@@ -21,14 +21,14 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("echo")]
-    public async Task<IActionResult> GetUser(GetUserRequest request)
+    [HttpGet("")]
+    public async Task<ActionResult<GetUserResponse>> GetUser(GetUserRequest request)
     {
         var query = _mapper.Map<GetUserQuery>(request);
 
         var result = await _sender.Send(query);
 
-        return result.Match<IActionResult>(
+        return result.Match<ActionResult<GetUserResponse>>(
             user => Ok(_mapper.Map<GetUserResponse>(user)),
             _ => NotFound());
     }

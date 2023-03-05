@@ -20,7 +20,7 @@ public record UserDto(
     public string Username => Pk[FieldSpecifierRange(Pk)];
 
     [JsonIgnore]
-    public string Sub => Sk[FieldSpecifierRange(Sk)];
+    public string Id => Sk[FieldSpecifierRange(Sk)];
 
     private static Range FieldSpecifierRange(string field)
     {

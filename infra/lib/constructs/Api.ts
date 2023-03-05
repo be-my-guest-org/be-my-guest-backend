@@ -92,6 +92,13 @@ export class Api extends Construct {
       integration: integration,
     });
 
+    httpApi.addRoutes({
+      path: "/users",
+      methods: [HttpMethod.GET],
+      integration: integration,
+      authorizer: new HttpNoneAuthorizer(),
+    });
+
     new cdk.CfnOutput(this, "apiUrl", {
       value: httpApi.url!,
     });

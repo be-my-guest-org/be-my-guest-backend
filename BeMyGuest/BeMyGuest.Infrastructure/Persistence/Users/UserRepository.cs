@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using BeMyGuest.Domain.Users;
 using Mapster;
@@ -19,6 +17,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUser(string userId, string username)
     {
+        await Task.CompletedTask;
         var getItemRequest = new GetItemRequest
         {
             TableName = TableName,
@@ -28,16 +27,18 @@ public class UserRepository : IUserRepository
             },
         };
 
-        var response = await _dynamoDb.GetItemAsync(getItemRequest);
+        // var response = await _dynamoDb.GetItemAsync(getItemRequest);
+        //
+        // if (response.Item.Count == 0)
+        // {
+        //     return null;
+        // }
+        //
+        // var itemAsDocument = Document.FromAttributeMap(response.Item);
+        //
+        // var userDto = JsonSerializer.Deserialize<UserDto>(itemAsDocument.ToJson())!;
 
-        if (response.Item.Count == 0)
-        {
-            return null;
-        }
-
-        var itemAsDocument = Document.FromAttributeMap(response.Item);
-
-        var userDto = JsonSerializer.Deserialize<UserDto>(itemAsDocument.ToJson())!;
+        var userDto = new UserDto("a#aaa", "b#bbb", "fn", "ln", "email", DateTime.UtcNow, DateTime.UtcNow);
 
         return userDto.Adapt<User>();
     }
