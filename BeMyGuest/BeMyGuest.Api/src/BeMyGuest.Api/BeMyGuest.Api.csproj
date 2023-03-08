@@ -12,9 +12,12 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.4.0"/>
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\BeMyGuest.Application\BeMyGuest.Application.csproj"/>
+        <ProjectReference Include="..\..\..\BeMyGuest.Common\BeMyGuest.Common.csproj"/>
+        <ProjectReference Include="..\..\..\BeMyGuest.Contracts\BeMyGuest.Contracts.csproj"/>
         <ProjectReference Include="..\..\..\BeMyGuest.Domain\BeMyGuest.Domain.csproj"/>
         <ProjectReference Include="..\..\..\BeMyGuest.Infrastructure\BeMyGuest.Infrastructure.csproj"/>
     </ItemGroup>

@@ -1,3 +1,4 @@
+using BeMyGuest.Api;
 using BeMyGuest.Application;
 using BeMyGuest.Infrastructure;
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 builder.Services
+    .AddPresentation()
     .AddApplication()
     .AddInfrastructure();
 

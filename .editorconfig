@@ -37,6 +37,8 @@ dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1009.severity = none
 dotnet_diagnostic.SA1614.severity = none
 dotnet_diagnostic.SA1629.severity = none
+dotnet_diagnostic.SA1515.severity = none
+dotnet_diagnostic.SA1129.severity = none
 
 # Organize usings
 dotnet_separate_import_directive_groups = false

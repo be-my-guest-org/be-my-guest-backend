@@ -1,5 +1,6 @@
 import { Construct } from "constructs";
 
+import { RemovalPolicy } from "aws-cdk-lib";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
 import { IGrantable } from "aws-cdk-lib/aws-iam";
 
@@ -13,12 +14,13 @@ export class DynamoDbTable extends Construct {
   constructor(scope: Construct, id: string, props?: DynamoDbTableProps) {
     super(scope, id);
 
-    const table = new Table(this, "be-my-guest-table", {
+    const table = new Table(this, id, {
       partitionKey: { name: "pk", type: AttributeType.STRING },
       sortKey: { name: "sk", type: AttributeType.STRING },
       billingMode: BillingMode.PROVISIONED,
       readCapacity: 1,
       writeCapacity: 1,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     table

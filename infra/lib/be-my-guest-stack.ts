@@ -13,24 +13,36 @@ export class BeMyGuestStack extends cdk.Stack {
 
     const postUserConfirmationLambda = new DotNetLambdaFunction(
       this,
-      "post-user-confirmation",
+      "PostUserConfirmationLambda",
       {
         projectDir:
           "../PostConfirmationLambda/PostConfirmationLambda/src/PostConfirmationLambda",
       }
     );
 
-    const userPool = new CognitoUserPool(this, "UserPool", {
+    const userPool = new CognitoUserPool(this, "BeMyGuestUserPool", {
       postConfirmationLambda: postUserConfirmationLambda.lambdaFunction,
     });
 
-    new Api(this, "Api", {
+    const beMyGuestLambda = new DotNetLambdaFunction(
+      this,
+      "BeMyGuestLambda",
+      {
+        projectDir: "../BeMyGuest/BeMyGuest.Api/src/BeMyGuest.Api",
+      }
+    );
+
+    new Api(this, "BeMyGuestApi", {
       userPoolId: userPool.userPoolId,
       userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
+      lambdaFunction: beMyGuestLambda.lambdaFunction,
     });
 
-    const dynamoDbTable = new DynamoDbTable(this, "Table", {
-      readWriteDataGrantees: [postUserConfirmationLambda.lambdaFunction],
+    const dynamoDbTable = new DynamoDbTable(this, "BeMyGuestTable", {
+      readWriteDataGrantees: [
+        postUserConfirmationLambda.lambdaFunction,
+        beMyGuestLambda.lambdaFunction,
+      ],
     });
 
     postUserConfirmationLambda.addEnvironment(

@@ -3,7 +3,7 @@
 namespace PostConfirmationLambda;
 
 public record PostUserConfirmationEvent(
-    [property: JsonPropertyName("username")]
+    [property: JsonPropertyName("userName")]
     string Username,
     [property: JsonPropertyName("request")]
     Request Request)

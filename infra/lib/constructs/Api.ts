@@ -7,39 +7,32 @@ import {
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as cdk from "aws-cdk-lib";
+import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
-import { DotNetLambdaFunction } from "./dot-net-lambda-function";
 
 export interface ApiProps {
   readonly userPoolId: string;
   readonly userPoolAppIntegrationClientId: string;
+  readonly lambdaFunction: IFunction;
 }
 
 export class Api extends Construct {
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id);
 
-    const beMyGuestLambda = new DotNetLambdaFunction(
-      this,
-      "be-my-guest-lambda",
-      {
-        projectDir: "../BeMyGuest/BeMyGuest.Api/src/BeMyGuest.Api",
-      }
-    );
-
     const issuerUrl = `https://cognito-idp.${
       cdk.Stack.of(this).region
     }.amazonaws.com/${props.userPoolId}`;
 
     const cognitoJwtAuthorizer = new HttpJwtAuthorizer(
-      "cognito-jwt-authorizer",
+      "CognitoJwtAuthorizer",
       issuerUrl,
       {
         jwtAudience: [props.userPoolAppIntegrationClientId],
       }
     );
 
-    const httpApi = new HttpApi(this, "be-my-guest", {
+    const httpApi = new HttpApi(this, "BeMyGuestHttpApi", {
       description: "Be my guest API gateway",
       corsPreflight: {
         allowHeaders: [
@@ -63,8 +56,8 @@ export class Api extends Construct {
     });
 
     const integration = new HttpLambdaIntegration(
-      "integration",
-      beMyGuestLambda.lambdaFunction
+      "HttpLambdaIntegration",
+      props.lambdaFunction
     );
 
     httpApi.addRoutes({
@@ -90,6 +83,13 @@ export class Api extends Construct {
       path: "/calculator/echo2/{x}",
       methods: [HttpMethod.GET],
       integration: integration,
+    });
+
+    httpApi.addRoutes({
+      path: "/users",
+      methods: [HttpMethod.GET],
+      integration: integration,
+      authorizer: new HttpNoneAuthorizer(),
     });
 
     new cdk.CfnOutput(this, "apiUrl", {
