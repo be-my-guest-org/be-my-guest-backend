@@ -16,6 +16,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\BeMyGuest.Application\BeMyGuest.Application.csproj"/>
+        <ProjectReference Include="..\..\..\BeMyGuest.Common\BeMyGuest.Common.csproj"/>
         <ProjectReference Include="..\..\..\BeMyGuest.Contracts\BeMyGuest.Contracts.csproj"/>
         <ProjectReference Include="..\..\..\BeMyGuest.Domain\BeMyGuest.Domain.csproj"/>
         <ProjectReference Include="..\..\..\BeMyGuest.Infrastructure\BeMyGuest.Infrastructure.csproj"/>

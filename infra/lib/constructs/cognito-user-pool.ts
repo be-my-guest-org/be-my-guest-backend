@@ -23,7 +23,7 @@ export class CognitoUserPool extends Construct {
   constructor(scope: Construct, id: string, props?: CognitoUserPoolProps) {
     super(scope, id);
 
-    const cognitoUserPool = new UserPool(this, "be-my-guest-user-pool", {
+    const cognitoUserPool = new UserPool(this, id, {
       signInAliases: { email: true },
       selfSignUpEnabled: true,
       autoVerify: { email: true },
@@ -64,7 +64,7 @@ export class CognitoUserPool extends Construct {
 
     const userPoolIdentityProviderGoogle = new UserPoolIdentityProviderGoogle(
       this,
-      "be-my-guest-user-pool-idp-google",
+      `${id}GoogleIdentityProvider`,
       {
         clientId:
           "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com",
@@ -81,12 +81,12 @@ export class CognitoUserPool extends Construct {
           givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
           gender: ProviderAttribute.GOOGLE_GENDER,
           birthdate: ProviderAttribute.GOOGLE_BIRTHDAYS,
-          phoneNumber: ProviderAttribute.GOOGLE_PHONE_NUMBERS
+          phoneNumber: ProviderAttribute.GOOGLE_PHONE_NUMBERS,
         },
       }
     );
 
-    const client = cognitoUserPool.addClient("app-client", {
+    const client = cognitoUserPool.addClient(`${id}AppClient`, {
       authFlows: {
         userSrp: true,
         custom: true,

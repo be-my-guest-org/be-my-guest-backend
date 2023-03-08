@@ -14,7 +14,7 @@ export class DynamoDbTable extends Construct {
   constructor(scope: Construct, id: string, props?: DynamoDbTableProps) {
     super(scope, id);
 
-    const table = new Table(this, "be-my-guest-table", {
+    const table = new Table(this, id, {
       partitionKey: { name: "pk", type: AttributeType.STRING },
       sortKey: { name: "sk", type: AttributeType.STRING },
       billingMode: BillingMode.PROVISIONED,
