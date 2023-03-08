@@ -35,9 +35,11 @@ export class CognitoUserPool extends Construct {
         emailStyle: VerificationEmailStyle.LINK,
       },
       standardAttributes: {
-        familyName: { required: false, mutable: false },
-        givenName: { required: false, mutable: false },
+        familyName: { required: false, mutable: true },
+        givenName: { required: false, mutable: true },
         address: { required: false, mutable: true },
+        birthdate: { required: false, mutable: true },
+        gender: { required: false, mutable: true },
       },
       passwordPolicy: {
         minLength: 8,
