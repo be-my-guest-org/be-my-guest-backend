@@ -1,5 +1,6 @@
 import { Construct } from "constructs";
 
+import { RemovalPolicy } from "aws-cdk-lib";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
 import { IGrantable } from "aws-cdk-lib/aws-iam";
 
@@ -19,6 +20,7 @@ export class DynamoDbTable extends Construct {
       billingMode: BillingMode.PROVISIONED,
       readCapacity: 1,
       writeCapacity: 1,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     table
