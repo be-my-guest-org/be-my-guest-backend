@@ -1,5 +1,6 @@
 import { DotNetFunction } from "@xaaskit-cdk/aws-lambda-dotnet";
-import { Duration } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 
 export interface DotNetFunctionProps {
@@ -18,9 +19,12 @@ export class DotNetLambdaFunction extends Construct {
       timeout: props.timeout ?? Duration.seconds(30),
     });
 
-    this.lambdaFunction = lambdaFunction;
+    new LogGroup(this, "MyLogGroup", {
+      logGroupName: `/aws/lambda/${lambdaFunction.functionName}`,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
-    lambdaFunction.addEnvironment;
+    this.lambdaFunction = lambdaFunction;
   }
 
   public addEnvironment(key: string, value: string) {
