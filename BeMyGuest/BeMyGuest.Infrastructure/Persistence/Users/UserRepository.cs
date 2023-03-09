@@ -3,21 +3,24 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using BeMyGuest.Domain.Users;
+using BeMyGuest.Infrastructure.Configuration;
 using Mapster;
+using Microsoft.Extensions.Options;
 
 namespace BeMyGuest.Infrastructure.Persistence.Users;
 
 public class UserRepository : IUserRepository
 {
-    private const string TableName = "BeMyGuestStack-BeMyGuestTable3A49B3E7-BF2NWOM56WMW";
     private const string UserIdentifier = "USER";
     private const string ProfileIdentifier = "PROFILE";
     private const string KeySeparator = "#";
     private readonly IAmazonDynamoDB _dynamoDb;
+    private readonly DynamoDbOptions _dynamoDbOptions;
 
-    public UserRepository(IAmazonDynamoDB dynamoDb)
+    public UserRepository(IAmazonDynamoDB dynamoDb, IOptions<DynamoDbOptions> options)
     {
         _dynamoDb = dynamoDb;
+        _dynamoDbOptions = options.Value;
     }
 
     public async Task<User?> GetUser(string userId, string username)
@@ -25,7 +28,7 @@ public class UserRepository : IUserRepository
         await Task.CompletedTask;
         var getItemRequest = new GetItemRequest
         {
-            TableName = TableName,
+            TableName = _dynamoDbOptions.TableName,
             Key = new Dictionary<string, AttributeValue>
             {
                 { "pk", new AttributeValue { S = ToTableKey(UserIdentifier, userId) } },

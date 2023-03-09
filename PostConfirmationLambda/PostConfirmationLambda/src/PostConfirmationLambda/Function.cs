@@ -12,9 +12,7 @@ namespace PostConfirmationLambda;
 
 public class Function
 {
-    private const string TableNameEnvVar = "TABLE_NAME";
-
-    // public async Task<PostUserConfirmationEvent> FunctionHandler(PostUserConfirmationEvent postUserConfirmationEvent, ILambdaContext context)
+    private const string TableNameEnvVar = "DynamoDb__TableName";
 
     public JsonElement FunctionHandler(JsonElement postConfirmationEvent, ILambdaContext context)
     {

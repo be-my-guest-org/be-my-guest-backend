@@ -6,7 +6,7 @@ import { DotNetLambdaFunction } from "./constructs/dot-net-lambda-function";
 import { DynamoDbTable } from "./constructs/dynamo-db-table";
 
 export class BeMyGuestStack extends cdk.Stack {
-  private readonly TABLE_NAME_ENV_VAR = "TABLE_NAME";
+  private readonly TABLE_NAME_ENV_VAR = "DynamoDb__TableName";
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -46,6 +46,11 @@ export class BeMyGuestStack extends cdk.Stack {
     });
 
     postUserConfirmationLambda.addEnvironment(
+      this.TABLE_NAME_ENV_VAR,
+      dynamoDbTable.tableName
+    );
+
+    beMyGuestLambda.addEnvironment(
       this.TABLE_NAME_ENV_VAR,
       dynamoDbTable.tableName
     );
