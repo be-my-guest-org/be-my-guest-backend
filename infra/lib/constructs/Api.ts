@@ -1,5 +1,6 @@
 import {
   CorsHttpMethod,
+  DomainName,
   HttpApi,
   HttpMethod,
   HttpNoneAuthorizer,
@@ -7,13 +8,16 @@ import {
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as cdk from "aws-cdk-lib";
+import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
+import { Constants } from "../constants/constants";
 
 export interface ApiProps {
   readonly userPoolId: string;
   readonly userPoolAppIntegrationClientId: string;
   readonly lambdaFunction: IFunction;
+  readonly certificate: ICertificate;
 }
 
 export class Api extends Construct {
@@ -31,6 +35,11 @@ export class Api extends Construct {
         jwtAudience: [props.userPoolAppIntegrationClientId],
       }
     );
+
+    const domain = new DomainName(this, "DomainName", {
+      certificate: props.certificate,
+      domainName: Constants.DOMAIN_NAME,
+    });
 
     const httpApi = new HttpApi(this, "BeMyGuestHttpApi", {
       description: "Be my guest API gateway",
@@ -53,6 +62,9 @@ export class Api extends Construct {
         allowOrigins: ["http://localhost:3000"],
       },
       defaultAuthorizer: cognitoJwtAuthorizer,
+      defaultDomainMapping: {
+        domainName: domain,
+      },
     });
 
     const integration = new HttpLambdaIntegration(
