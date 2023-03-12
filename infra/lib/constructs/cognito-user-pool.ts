@@ -93,8 +93,8 @@ export class CognitoUserPool extends Construct {
         custom: true,
       },
       oAuth: {
-        callbackUrls: ["exp://192.168.0.102:19000/--/"],
-        logoutUrls: ["exp://192.168.0.102:19000/--/"],
+        callbackUrls: ["exp://192.168.0.102:19000/--/", "https://www.example.com"],
+        logoutUrls: ["exp://192.168.0.102:19000/--/", "https://www.example.com"],
         flows: {
           implicitCodeGrant: true,
         },
