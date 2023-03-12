@@ -14,13 +14,14 @@ import { Constants } from "../constants/constants";
 
 export interface CognitoUserPoolProps {
   readonly postConfirmationLambda: IFunction;
+  readonly googleOauthClientId: string;
 }
 
 export class CognitoUserPool extends Construct {
   public readonly userPoolId: string;
   public readonly userPoolAppIntegrationClientId: string;
 
-  constructor(scope: Construct, id: string, props?: CognitoUserPoolProps) {
+  constructor(scope: Construct, id: string, props: CognitoUserPoolProps) {
     super(scope, id);
 
     const cognitoUserPool = new UserPool(this, id, {
@@ -67,7 +68,7 @@ export class CognitoUserPool extends Construct {
       `${id}GoogleIdentityProvider`,
       {
         clientId:
-          "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com",
+          props.googleOauthClientId,
         clientSecretValue: Secret.fromSecretNameV2(
           this,
           "secret-id",
@@ -92,8 +93,8 @@ export class CognitoUserPool extends Construct {
         custom: true,
       },
       oAuth: {
-        callbackUrls: ["https://www.example.com/cb"],
-        logoutUrls: ["https://www.example.com/signout"],
+        callbackUrls: ["exp://192.168.0.102:19000/--/"],
+        logoutUrls: ["exp://192.168.0.102:19000/--/"],
         flows: {
           implicitCodeGrant: true,
         },
