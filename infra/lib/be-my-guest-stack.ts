@@ -30,6 +30,7 @@ export class BeMyGuestStack extends cdk.Stack {
 
     const userPool = new CognitoUserPool(this, "BeMyGuestUserPool", {
       postConfirmationLambda: postUserConfirmationLambda.lambdaFunction,
+      googleOauthClientId: Constants.GOOGLE_OAUTH_CLIENT_ID,
     });
 
     const beMyGuestLambda = new DotNetLambdaFunction(this, "BeMyGuestLambda", {
