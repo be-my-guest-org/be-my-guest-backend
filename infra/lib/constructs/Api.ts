@@ -10,14 +10,18 @@ import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-al
 import * as cdk from "aws-cdk-lib";
 import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
+import { ARecord, IHostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
+import { ApiGatewayv2DomainProperties } from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
-import { Constants } from "../constants/constants";
 
 export interface ApiProps {
   readonly userPoolId: string;
   readonly userPoolAppIntegrationClientId: string;
   readonly lambdaFunction: IFunction;
   readonly certificate: ICertificate;
+  readonly hostedZone: IHostedZone;
+  readonly domainName: string;
+  readonly subdomainName: string;
 }
 
 export class Api extends Construct {
@@ -38,7 +42,7 @@ export class Api extends Construct {
 
     const domain = new DomainName(this, "DomainName", {
       certificate: props.certificate,
-      domainName: Constants.DOMAIN_NAME,
+      domainName: props.domainName,
     });
 
     const httpApi = new HttpApi(this, "BeMyGuestHttpApi", {
@@ -65,6 +69,7 @@ export class Api extends Construct {
       defaultDomainMapping: {
         domainName: domain,
       },
+      disableExecuteApiEndpoint: true,
     });
 
     const integration = new HttpLambdaIntegration(
@@ -102,6 +107,17 @@ export class Api extends Construct {
       methods: [HttpMethod.GET],
       integration: integration,
       authorizer: new HttpNoneAuthorizer(),
+    });
+
+    new ARecord(this, "BeMyGuestApiAliasRecord", {
+      zone: props.hostedZone,
+      recordName: props.subdomainName,
+      target: RecordTarget.fromAlias(
+        new ApiGatewayv2DomainProperties(
+          domain.regionalDomainName,
+          domain.regionalHostedZoneId
+        )
+      ),
     });
 
     new cdk.CfnOutput(this, "apiUrl", {

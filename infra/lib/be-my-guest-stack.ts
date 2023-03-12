@@ -13,6 +13,7 @@ import { DynamoDbTable } from "./constructs/dynamo-db-table";
 
 export class BeMyGuestStack extends cdk.Stack {
   private readonly TABLE_NAME_ENV_VAR = "DynamoDb__TableName";
+  private readonly HOSTED_ZONE_NAME = "jordangottardo.com";
   private readonly HOSTED_ZONE_ID = "Z027129813KQ3AFNBS4SO";
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -52,10 +53,13 @@ export class BeMyGuestStack extends cdk.Stack {
       dynamoDbTable.tableName
     );
 
-    const existingHostedZone = HostedZone.fromHostedZoneId(
+    const existingHostedZone = HostedZone.fromHostedZoneAttributes(
       this,
       "HostedZone",
-      this.HOSTED_ZONE_ID
+      {
+        hostedZoneId: this.HOSTED_ZONE_ID,
+        zoneName: this.HOSTED_ZONE_NAME,
+      }
     );
 
     const certificate = new Certificate(this, "BeMyGuestCertificate", {
@@ -68,6 +72,9 @@ export class BeMyGuestStack extends cdk.Stack {
       userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
       lambdaFunction: beMyGuestLambda.lambdaFunction,
       certificate: certificate,
+      hostedZone: existingHostedZone,
+      domainName: Constants.DOMAIN_NAME,
+      subdomainName: Constants.SUBDOMAIN_NAME,
     });
   }
 }
