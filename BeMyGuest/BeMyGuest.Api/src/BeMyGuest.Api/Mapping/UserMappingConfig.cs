@@ -15,8 +15,14 @@ public class UserMappingConfig : IRegister
         config.NewConfig<User, GetUserResponse>()
             .Map(dest => dest.UserId, src => src.Id);
 
-        config.NewConfig<UserSnapshot, User>()
-            .Map(dest => dest.Id, src => src.Pk.RemoveFieldSpecifier())
-            .Map(dest => dest.Username, src => src.Sk.RemoveFieldSpecifier());
+        config.NewConfig<UserSnapshot, User>().ConstructUsing(src =>
+            User.Create(
+                src.Sk.RemoveFieldSpecifier(),
+                src.FirstName,
+                src.LastName,
+                src.Email,
+                src.Pk.RemoveFieldSpecifier(),
+                src.CreatedAt,
+                src.UpdatedAt));
     }
 }
