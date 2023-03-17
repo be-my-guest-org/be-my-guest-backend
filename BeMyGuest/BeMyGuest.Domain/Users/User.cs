@@ -2,17 +2,54 @@
 
 public class User
 {
-    public string Username { get; init; } = default!;
+    private User(
+        string username,
+        string firstName,
+        string lastName,
+        string email,
+        string id,
+        DateTime createdAt,
+        DateTime? updatedAt)
+    {
+        Username = username;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        Id = id;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+    }
 
-    public string FirstName { get; init; } = default!;
+    public string Username { get; }
 
-    public string LastName { get; init; } = default!;
+    public string FirstName { get; }
 
-    public string Email { get; init; } = default!;
+    public string LastName { get; }
 
-    public string Id { get; init; } = default!;
+    public string Email { get; }
 
-    public DateTime CreatedAt { get; init; }
+    public string Id { get; }
 
-    public DateTime? UpdatedAt { get; init; }
+    public DateTime CreatedAt { get; }
+
+    public DateTime? UpdatedAt { get; }
+
+    public static User Create(
+        string username,
+        string firstName,
+        string lastName,
+        string email,
+        string id,
+        DateTime createdAt,
+        DateTime? updatedAt)
+    {
+        return new User(
+            username,
+            firstName,
+            lastName,
+            email,
+            id,
+            createdAt,
+            updatedAt);
+    }
 }
