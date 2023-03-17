@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using BeMyGuest.Common.User;
 using BeMyGuest.Domain.Users;
 using BeMyGuest.Infrastructure.Configuration;
 using Mapster;
@@ -14,16 +15,18 @@ public class UserRepository : IUserRepository
     private const string UserIdentifier = "USER";
     private const string ProfileIdentifier = "PROFILE";
     private const string KeySeparator = "#";
+    private readonly CurrentUserData _currentUserData;
     private readonly IAmazonDynamoDB _dynamoDb;
     private readonly DynamoDbOptions _dynamoDbOptions;
 
-    public UserRepository(IAmazonDynamoDB dynamoDb, IOptions<DynamoDbOptions> options)
+    public UserRepository(IAmazonDynamoDB dynamoDb, IOptions<DynamoDbOptions> options, CurrentUserData currentUserData)
     {
+        _currentUserData = currentUserData;
         _dynamoDb = dynamoDb;
         _dynamoDbOptions = options.Value;
     }
 
-    public async Task<User?> GetUser(string userId, string username)
+    public async Task<User?> GetUser()
     {
         await Task.CompletedTask;
         var getItemRequest = new GetItemRequest
@@ -31,8 +34,8 @@ public class UserRepository : IUserRepository
             TableName = _dynamoDbOptions.TableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = ToTableKey(UserIdentifier, userId) } },
-                { "sk", new AttributeValue { S = ToTableKey(ProfileIdentifier, username) } },
+                { "pk", new AttributeValue { S = ToTableKey(UserIdentifier, _currentUserData.UserId) } },
+                { "sk", new AttributeValue { S = ToTableKey(ProfileIdentifier, _currentUserData.Username) } },
             },
         };
 

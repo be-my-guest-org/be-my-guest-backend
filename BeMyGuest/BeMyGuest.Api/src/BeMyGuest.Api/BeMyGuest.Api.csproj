@@ -13,6 +13,7 @@
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.4.0"/>
         <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0"/>
+        <PackageReference Include="Moschen.AwsLambdaAuthenticationHandler.Jwt" Version="1.0.1"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\BeMyGuest.Application\BeMyGuest.Application.csproj"/>

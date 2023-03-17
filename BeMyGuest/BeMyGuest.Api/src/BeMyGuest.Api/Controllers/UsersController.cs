@@ -22,9 +22,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("")]
-    public async Task<ActionResult<GetUserResponse>> GetUser(GetUserRequest request)
+    public async Task<ActionResult<GetUserResponse>> GetUser()
     {
-        var query = _mapper.Map<GetUserQuery>(request);
+        var query = new GetUserQuery();
 
         var result = await _sender.Send(query);
 

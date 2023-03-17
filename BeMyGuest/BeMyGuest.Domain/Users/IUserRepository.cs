@@ -2,5 +2,5 @@
 
 public interface IUserRepository
 {
-    Task<User?> GetUser(string userId, string username);
+    Task<User?> GetUser();
 }

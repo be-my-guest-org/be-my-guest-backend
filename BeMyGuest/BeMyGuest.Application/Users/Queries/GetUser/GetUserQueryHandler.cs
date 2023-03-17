@@ -18,9 +18,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, GetUserResult>
 
     public async Task<GetUserResult> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Received get user query for user {Username}", request.Username);
-
-        var user = await _userRepository.GetUser(request.UserId, request.Username);
+        var user = await _userRepository.GetUser();
 
         if (user is null)
         {

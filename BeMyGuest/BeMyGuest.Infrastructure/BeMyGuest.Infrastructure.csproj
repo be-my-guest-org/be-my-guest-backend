@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\BeMyGuest.Application\BeMyGuest.Application.csproj"/>
+        <ProjectReference Include="..\BeMyGuest.Common\BeMyGuest.Common.csproj"/>
     </ItemGroup>
 
 </Project>
