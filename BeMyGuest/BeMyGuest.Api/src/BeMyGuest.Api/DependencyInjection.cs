@@ -1,4 +1,5 @@
 ﻿using BeMyGuest.Api.Mapping;
+using BeMyGuest.Common.User;
 
 namespace BeMyGuest.Api;
 
@@ -8,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddMappings();
         services.AddControllers();
+        services.AddScoped<CurrentUserData>();
 
         return services;
     }
