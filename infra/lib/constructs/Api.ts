@@ -25,6 +25,8 @@ export interface ApiProps {
 }
 
 export class Api extends Construct {
+  private readonly API_BASE_PATH = "/api/v1";
+
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id);
 
@@ -84,26 +86,32 @@ export class Api extends Construct {
     });
 
     httpApi.addRoutes({
-      path: "/calculator/add/{a}/{b}",
+      path: `${this.API_BASE_PATH}/calculator/add/{a}/{b}`,
       methods: [HttpMethod.GET],
       integration: integration,
       authorizer: new HttpNoneAuthorizer(),
     });
 
     httpApi.addRoutes({
-      path: "/calculator/echo",
+      path: `${this.API_BASE_PATH}/calculator/echo`,
       methods: [HttpMethod.GET],
       integration: integration,
     });
 
     const echo2Route = httpApi.addRoutes({
-      path: "/calculator/echo2/{x}",
+      path: `${this.API_BASE_PATH}/calculator/echo2/{x}`,
       methods: [HttpMethod.GET],
       integration: integration,
     });
 
     httpApi.addRoutes({
-      path: "/users",
+      path: `${this.API_BASE_PATH}/users`,
+      methods: [HttpMethod.GET],
+      integration: integration
+    });
+
+    httpApi.addRoutes({
+      path: `${this.API_BASE_PATH}/events`,
       methods: [HttpMethod.GET],
       integration: integration,
       authorizer: new HttpNoneAuthorizer(),

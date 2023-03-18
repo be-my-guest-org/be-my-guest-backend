@@ -4,6 +4,10 @@ root = true
 [*]
 indent_style = space
 
+# ReSharper properties
+resharper_csharp_max_line_length = 160
+resharper_instance_members_qualify_declared_in = base_class
+
 # Xml files
 [*.xml]
 indent_size = 2
@@ -25,27 +29,27 @@ insert_final_newline = false
 [*.{cs,vb}]
 
 # Diagnostic rules
-dotnet_diagnostic.SA1101.severity = none
-dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1633.severity = none
-dotnet_diagnostic.SA1313.severity = none
-dotnet_diagnostic.SA1601.severity = none
-dotnet_diagnostic.SA1309.severity = none
-dotnet_diagnostic.SA1000.severity = none
-dotnet_diagnostic.SA1512.severity = none
-dotnet_diagnostic.SA0001.severity = none
-dotnet_diagnostic.SA1009.severity = none
-dotnet_diagnostic.SA1614.severity = none
-dotnet_diagnostic.SA1629.severity = none
-dotnet_diagnostic.SA1515.severity = none
-dotnet_diagnostic.SA1129.severity = none
+dotnet_diagnostic.sa1101.severity = none
+dotnet_diagnostic.sa1200.severity = none
+dotnet_diagnostic.sa1633.severity = none
+dotnet_diagnostic.sa1313.severity = none
+dotnet_diagnostic.sa1601.severity = none
+dotnet_diagnostic.sa1309.severity = none
+dotnet_diagnostic.sa1000.severity = none
+dotnet_diagnostic.sa1512.severity = none
+dotnet_diagnostic.sa0001.severity = none
+dotnet_diagnostic.sa1009.severity = none
+dotnet_diagnostic.sa1614.severity = none
+dotnet_diagnostic.sa1629.severity = none
+dotnet_diagnostic.sa1515.severity = none
+dotnet_diagnostic.sa1129.severity = none
 
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
-file_header_template = unset
+file_header_template = # this. and Me. preferences
 
-# this. and Me. preferences
+
 dotnet_style_qualification_for_event = false:silent
 dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_method = false:silent

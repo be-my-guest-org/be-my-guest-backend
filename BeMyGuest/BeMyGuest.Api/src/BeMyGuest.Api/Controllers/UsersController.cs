@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeMyGuest.Api.Controllers;
 
 [ApiController]
-[Route("users")]
+[Route("api/v1/users")]
 public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;

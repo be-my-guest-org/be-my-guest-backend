@@ -6,6 +6,7 @@ using BeMyGuest.Common.User;
 using BeMyGuest.Domain.Users;
 using BeMyGuest.Infrastructure.Configuration;
 using Mapster;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BeMyGuest.Infrastructure.Persistence.Users;
@@ -18,9 +19,15 @@ public class UserRepository : IUserRepository
     private readonly CurrentUserData _currentUserData;
     private readonly IAmazonDynamoDB _dynamoDb;
     private readonly DynamoDbOptions _dynamoDbOptions;
+    private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(IAmazonDynamoDB dynamoDb, IOptions<DynamoDbOptions> options, CurrentUserData currentUserData)
+    public UserRepository(
+        ILogger<UserRepository> logger,
+        IAmazonDynamoDB dynamoDb,
+        IOptions<DynamoDbOptions> options,
+        CurrentUserData currentUserData)
     {
+        _logger = logger;
         _currentUserData = currentUserData;
         _dynamoDb = dynamoDb;
         _dynamoDbOptions = options.Value;
@@ -28,7 +35,8 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUser()
     {
-        await Task.CompletedTask;
+        _logger.LogInformation("GetUser {UserId}, Username: {Username}", _currentUserData.UserId, _currentUserData.Username);
+
         var getItemRequest = new GetItemRequest
         {
             TableName = _dynamoDbOptions.TableName,
