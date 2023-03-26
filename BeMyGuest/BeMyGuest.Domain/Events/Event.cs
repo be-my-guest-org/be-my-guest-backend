@@ -1,8 +1,9 @@
 ﻿using BeMyGuest.Common.Common;
+using BeMyGuest.Domain.Common.Models;
 
 namespace BeMyGuest.Domain.Events;
 
-public class Event
+public class Event : EntityBase<Guid>
 {
     private Event(
         Guid id,
@@ -12,9 +13,11 @@ public class Event
         Location where,
         int maxParticipants,
         string hostId,
-        List<string> guests)
+        List<string> guests,
+        DateTime createdAt,
+        DateTime? updatedAt = null)
+        : base(id, createdAt, updatedAt)
     {
-        Id = id;
         Title = title;
         Description = description;
         When = when;
@@ -23,8 +26,6 @@ public class Event
         HostId = hostId;
         Guests = guests;
     }
-
-    public Guid Id { get; }
 
     public string Title { get; }
 
@@ -56,6 +57,7 @@ public class Event
             where,
             maxParticipants,
             hostId,
-            new List<string>());
+            new List<string>(),
+            DateTime.UtcNow);
     }
 }

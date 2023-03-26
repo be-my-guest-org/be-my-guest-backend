@@ -7,6 +7,8 @@ public record Location(
     string Qualifier,
     [property: JsonPropertyName("address")]
     string Address,
+    [property: JsonPropertyName("number")]
+    string Number,
     [property: JsonPropertyName("city")]
     string City,
     [property: JsonPropertyName("cap")]

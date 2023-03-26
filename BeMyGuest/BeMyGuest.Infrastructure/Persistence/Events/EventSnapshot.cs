@@ -19,4 +19,8 @@ public record EventSnapshot(
     [property: JsonPropertyName("maxParticipants")]
     int MaxParticipants,
     [property: JsonPropertyName("guestIds")]
-    List<string> Guests);
+    List<string> Guests,
+    [property: JsonPropertyName("createdAt")]
+    DateTime CreatedAt,
+    [property: JsonPropertyName("updatedAt")]
+    DateTime? UpdatedAt = null);

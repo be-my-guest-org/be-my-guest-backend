@@ -39,7 +39,7 @@ public class EventRepository : IEventRepository
         var eventAsJson = JsonSerializer.Serialize(eventSnapshot);
         var eventAsAttributes = Document.FromJson(eventAsJson).ToAttributeMap();
 
-        var createItemRequest = new PutItemRequest
+        PutItemRequest? createItemRequest = new()
         {
             TableName = _dynamoDbOptions.TableName, Item = eventAsAttributes, ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
         };

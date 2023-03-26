@@ -112,9 +112,8 @@ export class Api extends Construct {
 
     httpApi.addRoutes({
       path: `${this.API_BASE_PATH}/events`,
-      methods: [HttpMethod.GET],
+      methods: [HttpMethod.GET, HttpMethod.POST],
       integration: integration,
-      authorizer: new HttpNoneAuthorizer(),
     });
 
     new ARecord(this, "BeMyGuestApiAliasRecord", {

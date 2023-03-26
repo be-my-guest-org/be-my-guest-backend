@@ -10,4 +10,6 @@ public record CreateEventResponse(
     Location Where,
     int MaxParticipants,
     string HostId,
-    List<string> Guests);
+    List<string> Guests,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt);

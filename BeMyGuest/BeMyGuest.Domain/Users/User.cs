@@ -1,6 +1,8 @@
-﻿namespace BeMyGuest.Domain.Users;
+﻿using BeMyGuest.Domain.Common.Models;
 
-public class User
+namespace BeMyGuest.Domain.Users;
+
+public class User : EntityBase<string>
 {
     private User(
         string username,
@@ -10,14 +12,12 @@ public class User
         string id,
         DateTime createdAt,
         DateTime? updatedAt)
+        : base(id, createdAt, updatedAt)
     {
         Username = username;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        Id = id;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
     }
 
     public string Username { get; }
@@ -27,12 +27,6 @@ public class User
     public string LastName { get; }
 
     public string Email { get; }
-
-    public string Id { get; }
-
-    public DateTime CreatedAt { get; }
-
-    public DateTime? UpdatedAt { get; }
 
     public static User Create(
         string username,
