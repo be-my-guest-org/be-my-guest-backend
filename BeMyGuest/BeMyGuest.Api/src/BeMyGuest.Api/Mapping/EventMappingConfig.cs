@@ -15,8 +15,8 @@ public class EventMappingConfig : IRegister
         config.NewConfig<CreateEventRequest, CreateEventCommand>();
 
         config.NewConfig<Event, EventSnapshot>()
-            .Map(dest => dest.HostId, src => src.Host.PrependKeyIdentifier(KeyIdentifiers.User))
-            .Map(dest => dest.EventId, src => src.Host.PrependKeyIdentifier(KeyIdentifiers.Event));
+            .Map(dest => dest.HostId, src => src.HostId.PrependKeyIdentifier(KeyIdentifiers.User))
+            .Map(dest => dest.EventId, src => src.HostId.PrependKeyIdentifier(KeyIdentifiers.Event));
 
         config.NewConfig<Event, CreateEventResponse>();
     }

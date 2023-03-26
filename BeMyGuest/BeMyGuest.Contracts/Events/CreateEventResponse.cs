@@ -9,5 +9,5 @@ public record CreateEventResponse(
     DateTime When,
     Location Where,
     int MaxParticipants,
-    string Host,
+    string HostId,
     List<string> Guests);

@@ -7,6 +7,4 @@ public record CreateEventRequest(
     string Description,
     DateTime When,
     Location Where,
-    int MaxParticipants,
-    string Host,
-    List<string> Guests);
+    int MaxParticipants);

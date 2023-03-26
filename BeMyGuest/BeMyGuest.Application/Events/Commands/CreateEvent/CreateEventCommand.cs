@@ -8,6 +8,4 @@ public record CreateEventCommand(
     string Description,
     DateTime When,
     Location Where,
-    int MaxParticipants,
-    string Host,
-    List<string> Guests) : IRequest<CreateEventResult>;
+    int MaxParticipants) : IRequest<CreateEventResult>;

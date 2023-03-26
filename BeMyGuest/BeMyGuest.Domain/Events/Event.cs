@@ -11,7 +11,7 @@ public class Event
         DateTime when,
         Location where,
         int maxParticipants,
-        string host,
+        string hostId,
         List<string> guests)
     {
         Id = id;
@@ -20,7 +20,7 @@ public class Event
         When = when;
         Where = where;
         MaxParticipants = maxParticipants;
-        Host = host;
+        HostId = hostId;
         Guests = guests;
     }
 
@@ -36,7 +36,7 @@ public class Event
 
     public int MaxParticipants { get; }
 
-    public string Host { get; }
+    public string HostId { get; }
 
     public List<string> Guests { get; }
 
@@ -46,8 +46,7 @@ public class Event
         DateTime when,
         Location where,
         int maxParticipants,
-        string host,
-        List<string> guests)
+        string hostId)
     {
         return new Event(
             Guid.NewGuid(),
@@ -56,7 +55,7 @@ public class Event
             when,
             where,
             maxParticipants,
-            host,
-            guests);
+            hostId,
+            new List<string>());
     }
 }
