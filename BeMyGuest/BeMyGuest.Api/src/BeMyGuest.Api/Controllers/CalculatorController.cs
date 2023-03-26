@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeMyGuest.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class CalculatorController : ControllerBase
 {
     private readonly ILogger<CalculatorController> _logger;
