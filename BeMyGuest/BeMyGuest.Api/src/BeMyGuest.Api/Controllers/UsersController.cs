@@ -1,4 +1,5 @@
-﻿using BeMyGuest.Application.Users.Queries.GetUser;
+﻿using BeMyGuest.Api.Common;
+using BeMyGuest.Application.Users.Queries.GetUser;
 using BeMyGuest.Contracts.Users;
 using MapsterMapper;
 using MediatR;
@@ -8,7 +9,7 @@ namespace BeMyGuest.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/users")]
-public class UsersController : ControllerBase
+public class UsersController : AbstractController
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;

@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using BeMyGuest.Common.Identifiers;
 using BeMyGuest.Common.User;
 using BeMyGuest.Domain.Users;
 using BeMyGuest.Infrastructure.Configuration;
@@ -13,8 +14,6 @@ namespace BeMyGuest.Infrastructure.Persistence.Users;
 
 public class UserRepository : IUserRepository
 {
-    private const string UserIdentifier = "USER";
-    private const string ProfileIdentifier = "PROFILE";
     private const string KeySeparator = "#";
     private readonly CurrentUserData _currentUserData;
     private readonly IAmazonDynamoDB _dynamoDb;
@@ -42,8 +41,8 @@ public class UserRepository : IUserRepository
             TableName = _dynamoDbOptions.TableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = ToTableKey(UserIdentifier, _currentUserData.UserId) } },
-                { "sk", new AttributeValue { S = ToTableKey(ProfileIdentifier, _currentUserData.Username) } },
+                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, _currentUserData.UserId) } },
+                { "sk", new AttributeValue { S = ToTableKey(KeyIdentifiers.Profile, _currentUserData.Username) } },
             },
         };
 

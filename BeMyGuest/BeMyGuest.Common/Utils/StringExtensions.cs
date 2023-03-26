@@ -1,16 +1,21 @@
-﻿namespace BeMyGuest.Common.Utils;
+﻿using BeMyGuest.Common.Identifiers;
+
+namespace BeMyGuest.Common.Utils;
 
 public static class StringExtensions
 {
-    private const string FieldSpecifier = "#";
-
-    public static string RemoveFieldSpecifier(this string value)
+    public static string PrependKeyIdentifier(this string value, string identifier)
     {
-        if (!value.Contains(FieldSpecifier))
+        return $"{identifier}{KeyIdentifiers.Separator}{value}";
+    }
+
+    public static string RemoveKeyIdentifier(this string value)
+    {
+        if (!value.Contains(KeyIdentifiers.Separator))
         {
             return value;
         }
 
-        return value[(value.IndexOf(FieldSpecifier, StringComparison.InvariantCultureIgnoreCase) + 1)..];
+        return value[(value.IndexOf(KeyIdentifiers.Separator, StringComparison.InvariantCultureIgnoreCase) + 1)..];
     }
 }

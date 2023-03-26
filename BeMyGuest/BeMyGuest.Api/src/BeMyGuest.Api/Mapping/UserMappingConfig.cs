@@ -15,11 +15,11 @@ public class UserMappingConfig : IRegister
 
         config.NewConfig<UserSnapshot, User>().ConstructUsing(src =>
             User.Create(
-                src.Sk.RemoveFieldSpecifier(),
+                src.Sk.RemoveKeyIdentifier(),
                 src.FirstName,
                 src.LastName,
                 src.Email,
-                src.Pk.RemoveFieldSpecifier(),
+                src.Pk.RemoveKeyIdentifier(),
                 src.CreatedAt,
                 src.UpdatedAt));
     }
