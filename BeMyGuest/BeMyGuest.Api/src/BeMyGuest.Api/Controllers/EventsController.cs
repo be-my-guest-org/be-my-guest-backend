@@ -21,7 +21,7 @@ public class EventsController : AbstractController
         _mapper = mapper;
     }
 
-    [HttpGet("")]
+    [HttpPost("")]
     public async Task<ActionResult<CreateEventResponse>> CreateEvent(CreateEventRequest request)
     {
         var command = request.Adapt<CreateEventCommand>();

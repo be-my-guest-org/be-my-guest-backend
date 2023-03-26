@@ -7,7 +7,7 @@ public record EventSnapshot(
     [property: JsonPropertyName("pk")]
     string HostId,
     [property: JsonPropertyName("sk")]
-    Guid EventId,
+    string EventId,
     [property: JsonPropertyName("title")]
     string Title,
     [property: JsonPropertyName("description")]
