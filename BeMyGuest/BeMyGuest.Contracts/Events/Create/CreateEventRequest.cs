@@ -1,6 +1,6 @@
 ﻿using BeMyGuest.Common.Common;
 
-namespace BeMyGuest.Contracts.Events;
+namespace BeMyGuest.Contracts.Events.Create;
 
 public record CreateEventRequest(
     string Title,

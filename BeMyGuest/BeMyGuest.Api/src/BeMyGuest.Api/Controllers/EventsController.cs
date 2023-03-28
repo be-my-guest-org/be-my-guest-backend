@@ -1,6 +1,8 @@
 ﻿using BeMyGuest.Api.Common;
 using BeMyGuest.Application.Events.Commands.CreateEvent;
-using BeMyGuest.Contracts.Events;
+using BeMyGuest.Application.Events.Queries.GetEvent;
+using BeMyGuest.Contracts.Events.Create;
+using BeMyGuest.Contracts.Events.Get;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -19,6 +21,18 @@ public class EventsController : AbstractController
     {
         _sender = sender;
         _mapper = mapper;
+    }
+
+    [HttpGet("{eventId}")]
+    public async Task<ActionResult<GetEventResponse>> GetEvent([FromRoute] GetEventRequest request)
+    {
+        var query = request.Adapt<GetEventQuery>();
+
+        var result = await _sender.Send(query);
+
+        return result.Match<ActionResult<GetEventResponse>>(
+            user => Ok(_mapper.Map<GetEventResponse>(user)),
+            _ => NotFound());
     }
 
     [HttpPost("")]

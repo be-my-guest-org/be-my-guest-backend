@@ -1,4 +1,4 @@
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import {
   AccountRecovery,
   ProviderAttribute,
@@ -117,6 +117,8 @@ export class CognitoUserPool extends Construct {
         },
       },
       supportedIdentityProviders: [UserPoolClientIdentityProvider.GOOGLE],
+      accessTokenValidity: Duration.hours(8),
+      idTokenValidity: Duration.hours(8)
     });
 
     this.userPoolAppIntegrationClientIds.push(testClient.userPoolClientId);
