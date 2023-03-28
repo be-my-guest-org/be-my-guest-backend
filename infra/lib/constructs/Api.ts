@@ -16,7 +16,7 @@ import { Construct } from "constructs";
 
 export interface ApiProps {
   readonly userPoolId: string;
-  readonly userPoolAppIntegrationClientId: string;
+  readonly userPoolAppIntegrationClientIds: string[];
   readonly lambdaFunction: IFunction;
   readonly certificate: ICertificate;
   readonly hostedZone: IHostedZone;
@@ -38,7 +38,7 @@ export class Api extends Construct {
       "CognitoJwtAuthorizer",
       issuerUrl,
       {
-        jwtAudience: [props.userPoolAppIntegrationClientId],
+        jwtAudience: props.userPoolAppIntegrationClientIds,
       }
     );
 

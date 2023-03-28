@@ -19,7 +19,7 @@ export interface CognitoUserPoolProps {
 
 export class CognitoUserPool extends Construct {
   public readonly userPoolId: string;
-  public readonly userPoolAppIntegrationClientId: string;
+  public readonly userPoolAppIntegrationClientIds: string[] = [];
 
   constructor(scope: Construct, id: string, props: CognitoUserPoolProps) {
     super(scope, id);
@@ -92,14 +92,8 @@ export class CognitoUserPool extends Construct {
         custom: true,
       },
       oAuth: {
-        callbackUrls: [
-          "exp://192.168.0.102:19000/--/",
-          "https://www.example.com",
-        ],
-        logoutUrls: [
-          "exp://192.168.0.102:19000/--/",
-          "https://www.example.com",
-        ],
+        callbackUrls: ["exp://192.168.0.102:19000/--/"],
+        logoutUrls: ["exp://192.168.0.102:19000/--/"],
         flows: {
           authorizationCodeGrant: true,
         },
@@ -107,8 +101,25 @@ export class CognitoUserPool extends Construct {
       supportedIdentityProviders: [UserPoolClientIdentityProvider.GOOGLE],
     });
 
-    this.userPoolAppIntegrationClientId = client.userPoolClientId;
-
+    this.userPoolAppIntegrationClientIds.push(client.userPoolClientId);
     client.node.addDependency(userPoolIdentityProviderGoogle);
+
+    const testClient = cognitoUserPool.addClient(`${id}TestAppClient`, {
+      authFlows: {
+        userSrp: true,
+        custom: true,
+      },
+      oAuth: {
+        callbackUrls: ["https://www.example.com"],
+        logoutUrls: ["https://www.example.com"],
+        flows: {
+          implicitCodeGrant: true,
+        },
+      },
+      supportedIdentityProviders: [UserPoolClientIdentityProvider.GOOGLE],
+    });
+
+    this.userPoolAppIntegrationClientIds.push(testClient.userPoolClientId);
+    testClient.node.addDependency(userPoolIdentityProviderGoogle);
   }
 }

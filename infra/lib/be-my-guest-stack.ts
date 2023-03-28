@@ -70,7 +70,7 @@ export class BeMyGuestStack extends cdk.Stack {
 
     new Api(this, "BeMyGuestApi", {
       userPoolId: userPool.userPoolId,
-      userPoolAppIntegrationClientId: userPool.userPoolAppIntegrationClientId,
+      userPoolAppIntegrationClientIds: userPool.userPoolAppIntegrationClientIds,
       lambdaFunction: beMyGuestLambda.lambdaFunction,
       certificate: certificate,
       hostedZone: existingHostedZone,
