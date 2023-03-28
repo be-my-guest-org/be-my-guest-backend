@@ -1,8 +1,8 @@
 ﻿using BeMyGuest.Common.Common;
 
-namespace BeMyGuest.Contracts.Events;
+namespace BeMyGuest.Contracts.Events.Get;
 
-public record CreateEventResponse(
+public record GetEventResponse(
     Guid Id,
     string Title,
     string Description,

@@ -49,7 +49,7 @@ public class Event : EntityBase<Guid>
         int maxParticipants,
         string hostId)
     {
-        return new Event(
+        return Create(
             Guid.NewGuid(),
             title,
             description,
@@ -57,7 +57,31 @@ public class Event : EntityBase<Guid>
             where,
             maxParticipants,
             hostId,
+            DateTime.UtcNow,
+            null);
+    }
+
+    public static Event Create(
+        Guid id,
+        string title,
+        string description,
+        DateTime when,
+        Location where,
+        int maxParticipants,
+        string hostId,
+        DateTime createdAt,
+        DateTime? updatedAt)
+    {
+        return new Event(
+            id,
+            title,
+            description,
+            when,
+            where,
+            maxParticipants,
+            hostId,
             new List<string>(),
-            DateTime.UtcNow);
+            createdAt,
+            updatedAt);
     }
 }
