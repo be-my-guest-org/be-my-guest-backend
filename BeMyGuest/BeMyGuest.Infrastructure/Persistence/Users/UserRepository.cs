@@ -16,8 +16,6 @@ namespace BeMyGuest.Infrastructure.Persistence.Users;
 public class UserRepository : RepositoryBase, IUserRepository
 {
     private readonly CurrentUserData _currentUserData;
-    private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly DynamoDbOptions _dynamoDbOptions;
     private readonly ILogger<UserRepository> _logger;
 
     public UserRepository(
@@ -25,11 +23,10 @@ public class UserRepository : RepositoryBase, IUserRepository
         IAmazonDynamoDB dynamoDb,
         IOptions<DynamoDbOptions> options,
         CurrentUserData currentUserData)
+        : base(dynamoDb, options)
     {
         _logger = logger;
         _currentUserData = currentUserData;
-        _dynamoDb = dynamoDb;
-        _dynamoDbOptions = options.Value;
     }
 
     public async Task<User?> GetUser()

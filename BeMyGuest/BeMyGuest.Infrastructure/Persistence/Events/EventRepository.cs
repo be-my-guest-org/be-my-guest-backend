@@ -15,18 +15,15 @@ namespace BeMyGuest.Infrastructure.Persistence.Events;
 
 public class EventRepository : RepositoryBase, IEventRepository
 {
-    private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly DynamoDbOptions _dynamoDbOptions;
     private readonly ILogger<EventRepository> _logger;
 
     public EventRepository(
         ILogger<EventRepository> logger,
         IAmazonDynamoDB dynamoDb,
         IOptions<DynamoDbOptions> options)
+        : base(dynamoDb, options)
     {
         _logger = logger;
-        _dynamoDb = dynamoDb;
-        _dynamoDbOptions = options.Value;
     }
 
     public async Task<Event?> Get(Guid userId, Guid eventId)
