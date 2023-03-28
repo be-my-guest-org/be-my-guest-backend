@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using BeMyGuest.Common.Common;
+using BeMyGuest.Infrastructure.Persistence.Common;
 
 namespace BeMyGuest.Infrastructure.Persistence.Events;
 

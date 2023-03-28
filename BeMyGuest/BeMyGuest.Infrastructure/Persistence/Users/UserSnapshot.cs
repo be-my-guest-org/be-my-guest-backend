@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using BeMyGuest.Infrastructure.Persistence.Common;
 
 namespace BeMyGuest.Infrastructure.Persistence.Users;
 

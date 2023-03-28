@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BeMyGuest.Infrastructure.Persistence;
+namespace BeMyGuest.Infrastructure.Persistence.Common;
 
 public abstract record SnapshotBase(
     [property: JsonPropertyName("createdAt")]
