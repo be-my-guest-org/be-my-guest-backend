@@ -13,8 +13,6 @@ public record UserSnapshot(
     string LastName,
     [property: JsonPropertyName("email")]
     string Email,
-    [property: JsonPropertyName("createdAt")]
     DateTime CreatedAt,
-    [property: JsonPropertyName("updatedAt")]
     DateTime? UpdatedAt = null
-);
+) : SnapshotBase(CreatedAt, UpdatedAt);
