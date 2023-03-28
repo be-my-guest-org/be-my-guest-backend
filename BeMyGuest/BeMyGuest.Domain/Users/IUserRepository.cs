@@ -1,6 +1,8 @@
-﻿namespace BeMyGuest.Domain.Users;
+﻿using BeMyGuest.Common.User;
+
+namespace BeMyGuest.Domain.Users;
 
 public interface IUserRepository
 {
-    Task<User?> GetUser();
+    Task<User?> GetUser(CurrentUserData currentUserData);
 }
