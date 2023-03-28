@@ -15,31 +15,28 @@ namespace BeMyGuest.Infrastructure.Persistence.Users;
 
 public class UserRepository : RepositoryBase, IUserRepository
 {
-    private readonly CurrentUserData _currentUserData;
     private readonly ILogger<UserRepository> _logger;
 
     public UserRepository(
         ILogger<UserRepository> logger,
         IAmazonDynamoDB dynamoDb,
-        IOptions<DynamoDbOptions> options,
-        CurrentUserData currentUserData)
+        IOptions<DynamoDbOptions> options)
         : base(dynamoDb, options)
     {
         _logger = logger;
-        _currentUserData = currentUserData;
     }
 
-    public async Task<User?> GetUser()
+    public async Task<User?> GetUser(CurrentUserData currentUserData)
     {
-        _logger.LogInformation("GetUser {UserId}, Username: {Username}", _currentUserData.UserId, _currentUserData.Username);
+        _logger.LogInformation("GetUser {UserId}, Username: {Username}", currentUserData.UserId, currentUserData.Username);
 
         var getItemRequest = new GetItemRequest
         {
             TableName = _dynamoDbOptions.TableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, _currentUserData.UserId) } },
-                { "sk", new AttributeValue { S = ToTableKey(KeyIdentifiers.Profile, _currentUserData.Username) } },
+                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, currentUserData.UserId) } },
+                { "sk", new AttributeValue { S = ToTableKey(KeyIdentifiers.Profile, currentUserData.Username) } },
             },
         };
 
