@@ -5,6 +5,7 @@ using BeMyGuest.Common.Utils;
 using BeMyGuest.Contracts.Events.Create;
 using BeMyGuest.Contracts.Events.Get;
 using BeMyGuest.Domain.Events;
+using BeMyGuest.Domain.Events.ValueObjects;
 using BeMyGuest.Infrastructure.Persistence.Events;
 using Mapster;
 
@@ -14,14 +15,13 @@ public class EventMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<CreateEventRequest, CreateEventCommand>();
+        RegisterCreate(config);
 
-        config.NewConfig<Event, EventSnapshot>()
-            .Map(dest => dest.HostId, src => src.HostId.ToString().PrependKeyIdentifier(KeyIdentifiers.User))
-            .Map(dest => dest.EventId, src => src.Id.ToString().PrependKeyIdentifier(KeyIdentifiers.Event));
+        RegisterGet(config);
+    }
 
-        config.NewConfig<Event, CreateEventResponse>();
-
+    private static void RegisterGet(TypeAdapterConfig config)
+    {
         config.NewConfig<GetEventRequest, GetEventQuery>();
 
         config.NewConfig<EventSnapshot, Event>()
@@ -34,7 +34,24 @@ public class EventMappingConfig : IRegister
                     src.Where,
                     src.MaxParticipants,
                     Guid.Parse(src.HostId.RemoveKeyIdentifier()),
+                    Status.From(src.Status),
                     src.CreatedAt,
                     src.UpdatedAt));
+
+        config.NewConfig<Event, GetEventResponse>()
+            .Map(dest => dest.Status, src => src.Status.Value);
+    }
+
+    private static void RegisterCreate(TypeAdapterConfig config)
+    {
+        config.NewConfig<CreateEventRequest, CreateEventCommand>();
+
+        config.NewConfig<Event, EventSnapshot>()
+            .Map(dest => dest.HostId, src => src.HostId.ToString().PrependKeyIdentifier(KeyIdentifiers.User))
+            .Map(dest => dest.EventId, src => src.Id.ToString().PrependKeyIdentifier(KeyIdentifiers.Event))
+            .Map(dest => dest.Status, src => src.Status.Value);
+
+        config.NewConfig<Event, CreateEventResponse>()
+            .Map(dest => dest.Status, src => src.Status.Value);
     }
 }

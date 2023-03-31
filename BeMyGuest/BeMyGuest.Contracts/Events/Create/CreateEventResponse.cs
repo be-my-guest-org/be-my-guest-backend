@@ -11,5 +11,6 @@ public record CreateEventResponse(
     int MaxParticipants,
     string HostId,
     List<string> Guests,
+    string Status,
     DateTime CreatedAt,
     DateTime? UpdatedAt);

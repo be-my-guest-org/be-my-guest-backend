@@ -1,5 +1,6 @@
 ﻿using BeMyGuest.Common.Common;
 using BeMyGuest.Domain.Common.Models;
+using BeMyGuest.Domain.Events.ValueObjects;
 
 namespace BeMyGuest.Domain.Events;
 
@@ -14,6 +15,7 @@ public class Event : EntityBase<Guid>
         int maxParticipants,
         Guid hostId,
         List<string> guests,
+        Status status,
         DateTime createdAt,
         DateTime? updatedAt = null)
         : base(id, createdAt, updatedAt)
@@ -25,6 +27,7 @@ public class Event : EntityBase<Guid>
         MaxParticipants = maxParticipants;
         HostId = hostId;
         Guests = guests;
+        Status = status;
     }
 
     public string Title { get; }
@@ -40,6 +43,8 @@ public class Event : EntityBase<Guid>
     public Guid HostId { get; }
 
     public List<string> Guests { get; }
+
+    public Status Status { get; }
 
     public static Event Create(
         string title,
@@ -57,6 +62,7 @@ public class Event : EntityBase<Guid>
             where,
             maxParticipants,
             hostId,
+            Status.Open(),
             DateTime.UtcNow,
             null);
     }
@@ -69,6 +75,7 @@ public class Event : EntityBase<Guid>
         Location where,
         int maxParticipants,
         Guid hostId,
+        Status status,
         DateTime createdAt,
         DateTime? updatedAt)
     {
@@ -81,6 +88,7 @@ public class Event : EntityBase<Guid>
             maxParticipants,
             hostId,
             new List<string>(),
+            status,
             createdAt,
             updatedAt);
     }
