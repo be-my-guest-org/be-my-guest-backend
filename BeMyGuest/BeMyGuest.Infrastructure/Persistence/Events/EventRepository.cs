@@ -49,9 +49,34 @@ public class EventRepository : RepositoryBase, IEventRepository
 
         var itemAsDocument = Document.FromAttributeMap(response.Item);
 
-        var userDto = JsonSerializer.Deserialize<EventSnapshot>(itemAsDocument.ToJson())!;
+        var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(itemAsDocument.ToJson())!;
 
-        return userDto.Adapt<Event>();
+        return eventSnapshot.Adapt<Event>();
+    }
+
+    public async Task<IEnumerable<Event>> GetAll(Guid userId)
+    {
+        var queryRequest = new QueryRequest
+        {
+            TableName = _dynamoDbOptions.TableName,
+            KeyConditionExpression = "pk = :pk AND begins_with(sk, :sk)",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":pk", new AttributeValue { S = $"{KeyIdentifiers.User}{KeyIdentifiers.Separator}{userId}" } },
+                { ":sk", new AttributeValue { S = KeyIdentifiers.Event } },
+            },
+        };
+
+        var response = await _dynamoDb.QueryAsync(queryRequest);
+
+        return response.Items.Select(item =>
+        {
+            var json = Document.FromAttributeMap(item).ToJson();
+
+            var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(json)!;
+
+            return eventSnapshot.Adapt<Event>();
+        });
     }
 
     public async Task<bool> Add(Event @event)
