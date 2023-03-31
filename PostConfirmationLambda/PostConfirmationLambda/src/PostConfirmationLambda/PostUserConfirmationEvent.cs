@@ -32,5 +32,5 @@ public record UserAttributes(
     [property: JsonPropertyName("family_name")]
     string LastName,
     [property: JsonPropertyName("sub")]
-    string Sub
+    Guid Sub
 );

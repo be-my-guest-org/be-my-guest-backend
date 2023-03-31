@@ -14,7 +14,7 @@ public class CurrentUserMiddleware
     public async Task InvokeAsync(HttpContext context, CurrentUserData currentUserData)
     {
         currentUserData.Username = context.User.Claims.First(claim => claim.Type == "username").Value;
-        currentUserData.UserId = context.User.Claims.First(claim => claim.Type == "sub").Value;
+        currentUserData.UserId = Guid.Parse(context.User.Claims.First(claim => claim.Type == "sub").Value);
 
         await _next(context);
     }

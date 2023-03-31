@@ -2,14 +2,14 @@
 
 namespace BeMyGuest.Domain.Users;
 
-public class User : EntityBase<string>
+public class User : EntityBase<Guid>
 {
     private User(
         string username,
         string firstName,
         string lastName,
         string email,
-        string id,
+        Guid id,
         DateTime createdAt,
         DateTime? updatedAt)
         : base(id, createdAt, updatedAt)
@@ -33,7 +33,7 @@ public class User : EntityBase<string>
         string firstName,
         string lastName,
         string email,
-        string id,
+        Guid id,
         DateTime createdAt,
         DateTime? updatedAt)
     {

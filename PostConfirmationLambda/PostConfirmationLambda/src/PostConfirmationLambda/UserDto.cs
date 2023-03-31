@@ -12,7 +12,7 @@ public record UserDto(
     [property: JsonPropertyName("email")]
     string Email,
     [property: JsonIgnore]
-    string Sub,
+    Guid Sub,
     [property: JsonPropertyName("createdAt")]
     DateTime CreatedAt,
     [property: JsonPropertyName("updatedAt")]

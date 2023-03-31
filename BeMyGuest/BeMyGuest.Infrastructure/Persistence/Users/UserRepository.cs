@@ -35,7 +35,7 @@ public class UserRepository : RepositoryBase, IUserRepository
             TableName = _dynamoDbOptions.TableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, currentUserData.UserId) } },
+                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, currentUserData.UserId.ToString()) } },
                 { "sk", new AttributeValue { S = ToTableKey(KeyIdentifiers.Profile, currentUserData.Username) } },
             },
         };

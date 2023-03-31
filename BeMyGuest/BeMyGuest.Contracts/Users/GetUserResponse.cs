@@ -1,7 +1,7 @@
 ﻿namespace BeMyGuest.Contracts.Users;
 
 public record GetUserResponse(
-    string UserId,
+    Guid UserId,
     string Username,
     string Email,
     string FirstName,
