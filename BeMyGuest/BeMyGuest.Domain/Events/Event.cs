@@ -12,7 +12,7 @@ public class Event : EntityBase<Guid>
         DateTime when,
         Location where,
         int maxParticipants,
-        string hostId,
+        Guid hostId,
         List<string> guests,
         DateTime createdAt,
         DateTime? updatedAt = null)
@@ -37,7 +37,7 @@ public class Event : EntityBase<Guid>
 
     public int MaxParticipants { get; }
 
-    public string HostId { get; }
+    public Guid HostId { get; }
 
     public List<string> Guests { get; }
 
@@ -47,7 +47,7 @@ public class Event : EntityBase<Guid>
         DateTime when,
         Location where,
         int maxParticipants,
-        string hostId)
+        Guid hostId)
     {
         return Create(
             Guid.NewGuid(),
@@ -68,7 +68,7 @@ public class Event : EntityBase<Guid>
         DateTime when,
         Location where,
         int maxParticipants,
-        string hostId,
+        Guid hostId,
         DateTime createdAt,
         DateTime? updatedAt)
     {

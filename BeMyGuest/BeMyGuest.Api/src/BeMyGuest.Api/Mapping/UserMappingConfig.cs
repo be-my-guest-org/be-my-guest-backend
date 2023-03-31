@@ -19,7 +19,7 @@ public class UserMappingConfig : IRegister
                 src.FirstName,
                 src.LastName,
                 src.Email,
-                src.Pk.RemoveKeyIdentifier(),
+                Guid.Parse(src.Pk.RemoveKeyIdentifier()),
                 src.CreatedAt,
                 src.UpdatedAt));
     }

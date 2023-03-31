@@ -19,7 +19,7 @@ public class Function
         context.Logger.LogInformation(
             $"User signup event received {JsonSerializer.Serialize(postConfirmationEvent)}");
 
-        var postUserConfirmationEvent = JsonSerializer.Deserialize<PostUserConfirmationEvent>(postConfirmationEvent)!;
+        var postUserConfirmationEvent = postConfirmationEvent.Deserialize<PostUserConfirmationEvent>()!;
 
         var dynamoDbClient = new AmazonDynamoDBClient();
 

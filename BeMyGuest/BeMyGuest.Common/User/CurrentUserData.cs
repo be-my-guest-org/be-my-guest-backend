@@ -2,7 +2,7 @@
 
 public class CurrentUserData
 {
-    public string UserId { get; set; } = default!;
+    public Guid UserId { get; set; }
 
     public string Username { get; set; } = default!;
 }
