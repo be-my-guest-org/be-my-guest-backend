@@ -1,10 +1,13 @@
-﻿using BeMyGuest.Api.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+using BeMyGuest.Api.Common;
 using BeMyGuest.Application.Events.Commands.CreateEvent;
+using BeMyGuest.Application.Events.Commands.JoinEvent;
 using BeMyGuest.Application.Events.Queries.GetAllCurrentUserEvents;
 using BeMyGuest.Application.Events.Queries.GetEvent;
 using BeMyGuest.Contracts.Events.Create;
 using BeMyGuest.Contracts.Events.Get;
 using BeMyGuest.Contracts.Events.GetAllForCurrentUser;
+using BeMyGuest.Contracts.Events.Join;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -58,5 +61,20 @@ public class EventsController : AbstractController
         return result.Match<ActionResult<CreateEventResponse>>(
             user => Ok(_mapper.Map<CreateEventResponse>(user)),
             _ => InternalServerError());
+    }
+
+    [HttpPost("{hostId}/{eventId}/join")]
+    [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+    public async Task<ActionResult> JoinEvent([FromRoute] JoinEventRequest request)
+    {
+        var query = request.Adapt<JoinEventCommand>();
+
+        var result = await _sender.Send(query);
+
+        return result.Match<ActionResult>(
+            success => Ok(),
+            notFound => NotFound(),
+            guests => BadRequest(),
+            error => InternalServerError());
     }
 }

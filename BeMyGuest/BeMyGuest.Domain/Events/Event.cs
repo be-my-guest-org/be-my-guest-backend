@@ -1,11 +1,15 @@
 ﻿using BeMyGuest.Common.Common;
 using BeMyGuest.Domain.Common.Models;
 using BeMyGuest.Domain.Events.ValueObjects;
+using OneOf;
+using OneOf.Types;
 
 namespace BeMyGuest.Domain.Events;
 
 public class Event : EntityBase<Guid>
 {
+    private readonly List<Guid> _guests;
+
     private Event(
         Guid id,
         string title,
@@ -14,7 +18,7 @@ public class Event : EntityBase<Guid>
         Location where,
         int maxParticipants,
         Guid hostId,
-        List<string> guests,
+        List<Guid> guests,
         Status status,
         DateTime createdAt,
         DateTime? updatedAt = null)
@@ -26,7 +30,7 @@ public class Event : EntityBase<Guid>
         Where = where;
         MaxParticipants = maxParticipants;
         HostId = hostId;
-        Guests = guests;
+        _guests = guests;
         Status = status;
     }
 
@@ -42,7 +46,7 @@ public class Event : EntityBase<Guid>
 
     public Guid HostId { get; }
 
-    public List<string> Guests { get; }
+    public IReadOnlyCollection<Guid> Guests => _guests.AsReadOnly();
 
     public Status Status { get; }
 
@@ -87,9 +91,21 @@ public class Event : EntityBase<Guid>
             where,
             maxParticipants,
             hostId,
-            new List<string>(),
+            new List<Guid>(),
             status,
             createdAt,
             updatedAt);
+    }
+
+    public OneOf<Success, TooManyGuests> AddGuest(Guid guestId)
+    {
+        if (_guests.Count >= MaxParticipants - 1)
+        {
+            return new TooManyGuests();
+        }
+
+        _guests.Add(guestId);
+
+        return new Success();
     }
 }

@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using BeMyGuest.Common.Identifiers;
+using BeMyGuest.Common.Utils;
 using BeMyGuest.Domain.Events;
 using BeMyGuest.Infrastructure.Configuration;
 using BeMyGuest.Infrastructure.Persistence.Common;
@@ -26,32 +27,29 @@ public class EventRepository : RepositoryBase, IEventRepository
         _logger = logger;
     }
 
+    private string TableName => _dynamoDbOptions.TableName;
+
     public async Task<Event?> Get(Guid userId, Guid eventId)
     {
         _logger.LogInformation("Get event UserId: {UserId}, EventId: {EventId}", userId, eventId);
 
-        var getItemRequest = new GetItemRequest
-        {
-            TableName = _dynamoDbOptions.TableName,
-            Key = new Dictionary<string, AttributeValue>
-            {
-                { "pk", new AttributeValue { S = ToTableKey(KeyIdentifiers.User, userId.ToString()) } },
-                { "sk", new AttributeValue { S = ToTableKey(KeyIdentifiers.Event, eventId.ToString()) } },
-            },
-        };
+        var eventAsHostQueryRequest = EventQueryRequest(userId, eventId, KeyIdentifiers.EventHost);
+        var eventAsHostResponse = await _dynamoDb.QueryAsync(eventAsHostQueryRequest);
 
-        var response = await _dynamoDb.GetItemAsync(getItemRequest);
+        var eventAsGuestQueryRequest = EventQueryRequest(userId, eventId, KeyIdentifiers.EventGuest);
+        var eventAsGuestResponse = await _dynamoDb.QueryAsync(eventAsGuestQueryRequest);
 
-        if (response.Item.Count == 0)
+        if (eventAsHostResponse.Items.Any())
         {
-            return null;
+            return eventAsHostResponse.Items.Select(ToDomainEventModel).Single();
         }
 
-        var itemAsDocument = Document.FromAttributeMap(response.Item);
+        if (eventAsGuestResponse.Items.Any())
+        {
+            return eventAsGuestResponse.Items.Select(ToDomainEventModel).Single();
+        }
 
-        var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(itemAsDocument.ToJson())!;
-
-        return eventSnapshot.Adapt<Event>();
+        return null;
     }
 
     public async Task<IEnumerable<Event>> GetAll(Guid userId)
@@ -69,14 +67,7 @@ public class EventRepository : RepositoryBase, IEventRepository
 
         var response = await _dynamoDb.QueryAsync(queryRequest);
 
-        return response.Items.Select(item =>
-        {
-            var json = Document.FromAttributeMap(item).ToJson();
-
-            var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(json)!;
-
-            return eventSnapshot.Adapt<Event>();
-        });
+        return response.Items.Select(ToDomainEventModel);
     }
 
     public async Task<bool> Add(Event @event)
@@ -95,5 +86,52 @@ public class EventRepository : RepositoryBase, IEventRepository
         var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
+    }
+
+    public async Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds)
+    {
+        var client = new AmazonDynamoDBClient();
+
+        var guestIdsAsAttributes = guestIds.Select(id => new AttributeValue { S = id.ToString() }).ToList();
+
+        var updateRequest = new UpdateItemRequest
+        {
+            TableName = TableName,
+            Key = new Dictionary<string, AttributeValue>
+            {
+                { "pk", new AttributeValue { S = hostId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
+                { "sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.EventHost) } },
+            },
+            UpdateExpression = "SET #attributeToUpdate = :newValue",
+            ExpressionAttributeNames = new Dictionary<string, string> { { "#attributeToUpdate", "guestIds" }, },
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> { { ":newValue", new AttributeValue { L = guestIdsAsAttributes } }, },
+        };
+
+        var response = await client.UpdateItemAsync(updateRequest);
+
+        return response.HttpStatusCode == HttpStatusCode.OK;
+    }
+
+    private static Event ToDomainEventModel(Dictionary<string, AttributeValue> item)
+    {
+        var json = Document.FromAttributeMap(item).ToJson();
+
+        var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(json)!;
+
+        return eventSnapshot.Adapt<Event>();
+    }
+
+    private QueryRequest EventQueryRequest(Guid userId, Guid eventId, string hostOrGuestKeyIdentifier)
+    {
+        return new QueryRequest
+        {
+            TableName = _dynamoDbOptions.TableName,
+            KeyConditionExpression = "pk = :pk AND begins_with(sk, :sk)",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":pk", new AttributeValue { S = userId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
+                { ":sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(hostOrGuestKeyIdentifier) } },
+            },
+        };
     }
 }
