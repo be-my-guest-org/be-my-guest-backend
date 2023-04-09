@@ -99,11 +99,16 @@ public class Event : EntityBase<Guid>
             updatedAt);
     }
 
-    public OneOf<Success, TooManyGuests> AddGuest(Guid guestId)
+    public OneOf<Success, TooManyGuests, GuestAlreadyJoined> AddGuest(Guid guestId)
     {
         if (_guests.Count >= MaxParticipants - 1)
         {
             return new TooManyGuests();
+        }
+
+        if (_guests.Contains(guestId))
+        {
+            return new GuestAlreadyJoined();
         }
 
         _guests.Add(guestId);

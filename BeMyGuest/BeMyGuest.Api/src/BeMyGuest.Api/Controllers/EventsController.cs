@@ -74,7 +74,8 @@ public class EventsController : AbstractController
         return result.Match<ActionResult>(
             success => Ok(),
             notFound => NotFound(),
-            guests => BadRequest(),
+            tooManyGuests => BadRequest(),
+            guestAlreadyJoined => BadRequest(),
             error => InternalServerError());
     }
 }
