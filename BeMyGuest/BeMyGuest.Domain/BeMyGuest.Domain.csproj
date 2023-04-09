@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="CSharpFunctionalExtensions" Version="2.38.1"/>
+        <PackageReference Include="OneOf" Version="3.0.243"/>
     </ItemGroup>
 
 </Project>

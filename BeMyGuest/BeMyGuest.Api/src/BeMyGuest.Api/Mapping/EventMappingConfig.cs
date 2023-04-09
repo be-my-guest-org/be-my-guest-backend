@@ -27,14 +27,15 @@ public class EventMappingConfig : IRegister
         config.NewConfig<EventSnapshot, Event>()
             .ConstructUsing(src =>
                 Event.Create(
-                    Guid.Parse(src.EventId.RemoveKeyIdentifier()),
+                    Guid.Parse(src.EventId.RemoveKeyIdentifiers()),
                     src.Title,
                     src.Description,
                     src.When,
                     src.Where,
                     src.MaxParticipants,
-                    Guid.Parse(src.HostId.RemoveKeyIdentifier()),
+                    Guid.Parse(src.HostId.RemoveKeyIdentifiers()),
                     Status.From(src.Status),
+                    src.Guests,
                     src.CreatedAt,
                     src.UpdatedAt));
 
@@ -47,8 +48,8 @@ public class EventMappingConfig : IRegister
         config.NewConfig<CreateEventRequest, CreateEventCommand>();
 
         config.NewConfig<Event, EventSnapshot>()
-            .Map(dest => dest.HostId, src => src.HostId.ToString().PrependKeyIdentifier(KeyIdentifiers.User))
-            .Map(dest => dest.EventId, src => src.Id.ToString().PrependKeyIdentifier(KeyIdentifiers.Event))
+            .Map(dest => dest.HostId, src => src.HostId.ToString().PrependKeyIdentifiers(KeyIdentifiers.User))
+            .Map(dest => dest.EventId, src => src.Id.ToString().PrependKeyIdentifiers(KeyIdentifiers.Event, KeyIdentifiers.Host))
             .Map(dest => dest.Status, src => src.Status.Value);
 
         config.NewConfig<Event, CreateEventResponse>()

@@ -122,6 +122,13 @@ export class Api extends Construct {
       integration: integration,
     });
 
+    
+    httpApi.addRoutes({
+      path: `${this.API_BASE_PATH}/events/{hostId}/{eventId}/join`,
+      methods: [HttpMethod.POST],
+      integration: integration,
+    });
+
     new ARecord(this, "BeMyGuestApiAliasRecord", {
       zone: props.hostedZone,
       recordName: props.subdomainName,

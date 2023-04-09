@@ -7,4 +7,6 @@ public interface IEventRepository
     Task<IEnumerable<Event>> GetAll(Guid userId);
 
     Task<bool> Add(Event @event);
+
+    Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds);
 }

@@ -1,21 +1,38 @@
-﻿using BeMyGuest.Common.Identifiers;
+﻿using System.Text;
+using BeMyGuest.Common.Identifiers;
 
 namespace BeMyGuest.Common.Utils;
 
 public static class StringExtensions
 {
-    public static string PrependKeyIdentifier(this string value, string identifier)
+    public static string PrependKeyIdentifiers(this string value, params string[] identifiers)
     {
-        return $"{identifier}{KeyIdentifiers.Separator}{value}";
+        if (!identifiers.Any())
+        {
+            return value;
+        }
+
+        var stringBuilder = new StringBuilder();
+
+        foreach (string identifier in identifiers)
+        {
+            stringBuilder
+                .Append(identifier)
+                .Append(KeyIdentifiers.Separator);
+        }
+
+        stringBuilder.Append(value);
+
+        return stringBuilder.ToString();
     }
 
-    public static string RemoveKeyIdentifier(this string value)
+    public static string RemoveKeyIdentifiers(this string value)
     {
         if (!value.Contains(KeyIdentifiers.Separator))
         {
             return value;
         }
 
-        return value[(value.IndexOf(KeyIdentifiers.Separator, StringComparison.InvariantCultureIgnoreCase) + 1)..];
+        return value[(value.LastIndexOf(KeyIdentifiers.Separator, StringComparison.InvariantCultureIgnoreCase) + 1)..];
     }
 }
