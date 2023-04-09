@@ -67,6 +67,7 @@ public class Event : EntityBase<Guid>
             maxParticipants,
             hostId,
             Status.Open(),
+            new List<Guid>(),
             DateTime.UtcNow,
             null);
     }
@@ -80,6 +81,7 @@ public class Event : EntityBase<Guid>
         int maxParticipants,
         Guid hostId,
         Status status,
+        List<Guid> guests,
         DateTime createdAt,
         DateTime? updatedAt)
     {
@@ -91,7 +93,7 @@ public class Event : EntityBase<Guid>
             where,
             maxParticipants,
             hostId,
-            new List<Guid>(),
+            guests,
             status,
             createdAt,
             updatedAt);

@@ -35,6 +35,7 @@ public class EventMappingConfig : IRegister
                     src.MaxParticipants,
                     Guid.Parse(src.HostId.RemoveKeyIdentifiers()),
                     Status.From(src.Status),
+                    src.Guests,
                     src.CreatedAt,
                     src.UpdatedAt));
 
