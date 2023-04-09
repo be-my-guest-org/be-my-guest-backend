@@ -90,8 +90,6 @@ public class EventRepository : RepositoryBase, IEventRepository
 
     public async Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds)
     {
-        var client = new AmazonDynamoDBClient();
-
         var guestIdsAsAttributes = guestIds.Select(id => new AttributeValue { S = id.ToString() }).ToList();
 
         var updateRequest = new UpdateItemRequest
@@ -102,12 +100,16 @@ public class EventRepository : RepositoryBase, IEventRepository
                 { "pk", new AttributeValue { S = hostId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
                 { "sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.EventHost) } },
             },
-            UpdateExpression = "SET #attributeToUpdate = :newValue",
-            ExpressionAttributeNames = new Dictionary<string, string> { { "#attributeToUpdate", "guestIds" }, },
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> { { ":newValue", new AttributeValue { L = guestIdsAsAttributes } }, },
+            UpdateExpression = "SET #guestIds = :guestIdsNewValue, #updatedAt = :updatedAtNewValue",
+            ExpressionAttributeNames = new Dictionary<string, string> { { "#guestIds", "guestIds" }, { "#updatedAt", "updatedAt" }, },
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":guestIdsNewValue", new AttributeValue { L = guestIdsAsAttributes } },
+                { ":updatedAtNewValue", new AttributeValue { S = DateTime.UtcNow.ToString("O") } },
+            },
         };
 
-        var response = await client.UpdateItemAsync(updateRequest);
+        var response = await _dynamoDb.UpdateItemAsync(updateRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
