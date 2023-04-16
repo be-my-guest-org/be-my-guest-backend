@@ -7,6 +7,8 @@ namespace BeMyGuest.Infrastructure.Persistence.Events;
 public record EventDataSnapshot(
     [property: JsonPropertyName("pk")]
     string EventId,
+    [property: JsonPropertyName("sk")]
+    string EventData,
     [property: JsonPropertyName("title")]
     string Title,
     [property: JsonPropertyName("description")]

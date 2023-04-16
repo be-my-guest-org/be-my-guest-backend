@@ -17,8 +17,8 @@ public class EventMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         RegisterCreate(config);
-
         RegisterGet(config);
+        RegisterJoin(config);
     }
 
     private static void RegisterGet(TypeAdapterConfig config)
@@ -36,12 +36,22 @@ public class EventMappingConfig : IRegister
     {
         config.NewConfig<CreateEventRequest, CreateEventCommand>();
 
-        config.NewConfig<Event, EventDataSnapshot>().Map<, string>(dest => dest.HostId, src => src.HostId.ToString().PrependKeyIdentifiers(KeyIdentifiers.User))
-            .Map(dest => dest.EventId, src => src.Id.ToString().PrependKeyIdentifiers(KeyIdentifiers.Event, KeyIdentifiers.Host))
+        config.NewConfig<Event, EventDataSnapshot>()
+            .Map(dest => dest.EventId, src => src.Id.PrependKeyIdentifiers(KeyIdentifiers.Event))
+            .Map(dest => dest.EventData, src => KeyIdentifiers.EventData)
             .Map(dest => dest.Status, src => src.Status.Value);
 
         config.NewConfig<Event, CreateEventResponse>()
             .Map(dest => dest.Status, src => src.Status.Value);
+    }
+
+    private static void RegisterJoin(TypeAdapterConfig config)
+    {
+        config.NewConfig<(Guid eventId, Guid guestId, string role), EventParticipantSnapshot>()
+            .Map(dest => dest.EventId, src => src.eventId.PrependKeyIdentifiers(KeyIdentifiers.EventData))
+            .Map(dest => dest.EventParticipantId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User, src.eventId.ToString(), KeyIdentifiers.Event))
+            .Map(dest => dest.Role, src => src.role)
+            .Map(dest => dest.UserId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User));
     }
 
     private static Event CreateEvent((EventDataSnapshot, IEnumerable<EventParticipantSnapshot>) data)

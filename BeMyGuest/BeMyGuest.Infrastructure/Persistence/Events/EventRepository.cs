@@ -3,6 +3,7 @@ using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using BeMyGuest.Common.Common;
 using BeMyGuest.Common.Identifiers;
 using BeMyGuest.Common.Utils;
 using BeMyGuest.Domain.Events;
@@ -78,8 +79,10 @@ public class EventRepository : RepositoryBase, IEventRepository
 
         var response = await _dynamoDb.QueryAsync(queryRequest);
 
+        var getEventTasks = response.Items.Select(item => Get(Guid.Parse(item["pk"].S.RemoveKeyIdentifiers())));
+        var events = await Task.WhenAll(getEventTasks);
 
-        return response.Items.Select(ToDomainEventModel);
+        return events.Where(e => e != null).Cast<Event>();
     }
 
     public async Task<bool> Add(Event @event)
@@ -100,28 +103,20 @@ public class EventRepository : RepositoryBase, IEventRepository
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
-    public async Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds)
+    public async Task<bool> Join(Guid eventId, Guid guestId)
     {
-        var guestIdsAsAttributes = guestIds.Select(id => new AttributeValue { S = id.ToString() }).ToList();
+        _logger.LogInformation("Join event EventId: {EventId}, GuestId: {GuestId}", eventId, guestId);
 
-        var updateRequest = new UpdateItemRequest
+        var eventSnapshot = (eventId, guestId, ParticipantRoles.Guest).Adapt<EventParticipantSnapshot>();
+        var eventAsJson = JsonSerializer.Serialize(eventSnapshot);
+        var eventAsAttributes = Document.FromJson(eventAsJson).ToAttributeMap();
+
+        var createItemRequest = new PutItemRequest
         {
-            TableName = TableName,
-            Key = new Dictionary<string, AttributeValue>
-            {
-                { "pk", new AttributeValue { S = hostId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
-                { "sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.EventHost) } },
-            },
-            UpdateExpression = "SET #guestIds = :guestIdsNewValue, #updatedAt = :updatedAtNewValue",
-            ExpressionAttributeNames = new Dictionary<string, string> { { "#guestIds", "guestIds" }, { "#updatedAt", "updatedAt" }, },
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                { ":guestIdsNewValue", new AttributeValue { L = guestIdsAsAttributes } },
-                { ":updatedAtNewValue", new AttributeValue { S = DateTime.UtcNow.ToString("O") } },
-            },
+            TableName = _dynamoDbOptions.TableName, Item = eventAsAttributes, ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
         };
 
-        var response = await _dynamoDb.UpdateItemAsync(updateRequest);
+        var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
     }

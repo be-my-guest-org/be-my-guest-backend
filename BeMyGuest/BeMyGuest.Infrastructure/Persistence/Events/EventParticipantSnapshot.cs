@@ -4,6 +4,10 @@ using BeMyGuest.Infrastructure.Persistence.Common;
 namespace BeMyGuest.Infrastructure.Persistence.Events;
 
 public record EventParticipantSnapshot(
+    [property: JsonPropertyName("pk")]
+    string EventId,
+    [property: JsonPropertyName("sk")]
+    string EventParticipantId,
     [property: JsonPropertyName("role")]
     string Role,
     [property: JsonPropertyName("gsi1pk")]
