@@ -124,7 +124,7 @@ export class Api extends Construct {
 
     
     httpApi.addRoutes({
-      path: `${this.API_BASE_PATH}/events/{hostId}/{eventId}/join`,
+      path: `${this.API_BASE_PATH}/events/{eventId}/join`,
       methods: [HttpMethod.POST],
       integration: integration,
     });

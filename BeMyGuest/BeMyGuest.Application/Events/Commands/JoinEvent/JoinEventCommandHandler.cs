@@ -39,7 +39,7 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
 
         var updateGuestResult = await _eventRepository.Join(
             @event.Id,
-            command.GuestId);
+            _currentUserData.UserId);
 
         if (!updateGuestResult)
         {
