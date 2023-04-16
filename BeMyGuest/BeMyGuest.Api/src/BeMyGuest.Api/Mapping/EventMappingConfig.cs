@@ -51,7 +51,8 @@ public class EventMappingConfig : IRegister
             .Map(dest => dest.EventId, src => src.eventId.PrependKeyIdentifiers(KeyIdentifiers.EventData))
             .Map(dest => dest.EventParticipantId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User, src.eventId.ToString(), KeyIdentifiers.Event))
             .Map(dest => dest.Role, src => src.role)
-            .Map(dest => dest.UserId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User));
+            .Map(dest => dest.UserId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User))
+            .Map(dest => dest.CreatedAt, src => DateTime.UtcNow);
     }
 
     private static Event CreateEvent((EventDataSnapshot, IEnumerable<EventParticipantSnapshot>) data)
