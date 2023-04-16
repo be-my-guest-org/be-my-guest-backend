@@ -8,6 +8,5 @@ public static class KeyIdentifiers
     public const string Guest = "GUEST";
     public const string Profile = "PROFILE";
     public const string Event = "EVENT";
-    public const string EventHost = $"{Event}{Separator}{Host}";
-    public const string EventGuest = $"{Event}{Separator}{Guest}";
+    public const string EventData = "EVENTDATA";
 }

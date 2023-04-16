@@ -18,7 +18,7 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
 
     public async Task<JoinEventResult> Handle(JoinEventCommand command, CancellationToken cancellationToken)
     {
-        var @event = await _eventRepository.Get(command.HostId, command.EventId);
+        var @event = await _eventRepository.Get(command.EventId);
 
         if (@event is null)
         {

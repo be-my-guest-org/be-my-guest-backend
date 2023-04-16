@@ -18,7 +18,7 @@ public class GetEventQueryHandler : IRequestHandler<GetEventQuery, GetEventResul
 
     public async Task<GetEventResult> Handle(GetEventQuery query, CancellationToken cancellationToken)
     {
-        var @event = await _eventRepository.Get(_currentUserData.UserId, query.EventId);
+        var @event = await _eventRepository.Get(query.EventId);
 
         if (@event is null)
         {
