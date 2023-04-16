@@ -115,6 +115,14 @@ public class EventRepository : RepositoryBase, IEventRepository
         return await AddParticipant(eventId, guestId, ParticipantRoles.Guest);
     }
 
+    private static T ToSnapshot<T>(Dictionary<string, AttributeValue> item)
+    {
+        var json = Document.FromAttributeMap(item).ToJson();
+        var eventSnapshot = JsonSerializer.Deserialize<T>(json)!;
+
+        return eventSnapshot;
+    }
+
     private async Task<bool> AddParticipant(Guid eventId, Guid userId, string role)
     {
         var eventSnapshot = (eventId, userId, role).Adapt<EventParticipantSnapshot>();
@@ -129,13 +137,5 @@ public class EventRepository : RepositoryBase, IEventRepository
         var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
-    }
-
-    private static T ToSnapshot<T>(Dictionary<string, AttributeValue> item)
-    {
-        var json = Document.FromAttributeMap(item).ToJson();
-        var eventSnapshot = JsonSerializer.Deserialize<T>(json)!;
-
-        return eventSnapshot;
     }
 }

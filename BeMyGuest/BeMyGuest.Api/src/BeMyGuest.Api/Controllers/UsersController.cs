@@ -11,13 +11,11 @@ namespace BeMyGuest.Api.Controllers;
 [Route("api/v1/users")]
 public class UsersController : AbstractController
 {
-    private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public UsersController(ILogger<UsersController> logger, ISender sender, IMapper mapper)
+    public UsersController(ISender sender, IMapper mapper)
     {
-        _logger = logger;
         _sender = sender;
         _mapper = mapper;
     }
