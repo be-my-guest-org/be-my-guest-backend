@@ -100,14 +100,24 @@ public class EventRepository : RepositoryBase, IEventRepository
 
         var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
-        return response.HttpStatusCode == HttpStatusCode.OK;
+        if (response.HttpStatusCode != HttpStatusCode.OK)
+        {
+            return false;
+        }
+
+        return await AddParticipant(@event.Id, @event.HostId, ParticipantRoles.Host);
     }
 
     public async Task<bool> Join(Guid eventId, Guid guestId)
     {
         _logger.LogInformation("Join event EventId: {EventId}, GuestId: {GuestId}", eventId, guestId);
 
-        var eventSnapshot = (eventId, guestId, ParticipantRoles.Guest).Adapt<EventParticipantSnapshot>();
+        return await AddParticipant(eventId, guestId, ParticipantRoles.Guest);
+    }
+
+    private async Task<bool> AddParticipant(Guid eventId, Guid userId, string role)
+    {
+        var eventSnapshot = (eventId, userId, role).Adapt<EventParticipantSnapshot>();
         var eventAsJson = JsonSerializer.Serialize(eventSnapshot);
         var eventAsAttributes = Document.FromJson(eventAsJson).ToAttributeMap();
 
@@ -119,21 +129,6 @@ public class EventRepository : RepositoryBase, IEventRepository
         var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
-    }
-
-    private static Event ToDomainEventModel(Dictionary<string, AttributeValue> item)
-    {
-        EventDataSnapshot eventDataSnapshot = ToEventDataSnapshot(item);
-
-        return eventDataSnapshot.Adapt<Event>();
-    }
-
-    private static EventDataSnapshot ToEventDataSnapshot(Dictionary<string, AttributeValue> item)
-    {
-        var json = Document.FromAttributeMap(item).ToJson();
-        var eventSnapshot = JsonSerializer.Deserialize<EventDataSnapshot>(json)!;
-
-        return eventSnapshot;
     }
 
     private static T ToSnapshot<T>(Dictionary<string, AttributeValue> item)
