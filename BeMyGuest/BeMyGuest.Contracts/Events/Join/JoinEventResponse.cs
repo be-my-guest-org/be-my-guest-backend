@@ -1,5 +1,3 @@
 ﻿namespace BeMyGuest.Contracts.Events.Join;
 
-public record JoinEventResponse
-{
-}
+public record JoinEventResponse;

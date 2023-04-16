@@ -3,6 +3,7 @@ using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using BeMyGuest.Common.Common;
 using BeMyGuest.Common.Identifiers;
 using BeMyGuest.Common.Utils;
 using BeMyGuest.Domain.Events;
@@ -29,52 +30,105 @@ public class EventRepository : RepositoryBase, IEventRepository
 
     private string TableName => _dynamoDbOptions.TableName;
 
-    public async Task<Event?> Get(Guid userId, Guid eventId)
+    private string Gsi1Name => _dynamoDbOptions.Gsi1Name;
+
+    public async Task<Event?> Get(Guid eventId)
     {
-        _logger.LogInformation("Get event UserId: {UserId}, EventId: {EventId}", userId, eventId);
+        _logger.LogInformation("Get event EventId: {EventId}", eventId);
 
-        var eventAsHostQueryRequest = EventQueryRequest(userId, eventId, KeyIdentifiers.EventHost);
-        var eventAsHostResponse = await _dynamoDb.QueryAsync(eventAsHostQueryRequest);
-
-        var eventAsGuestQueryRequest = EventQueryRequest(userId, eventId, KeyIdentifiers.EventGuest);
-        var eventAsGuestResponse = await _dynamoDb.QueryAsync(eventAsGuestQueryRequest);
-
-        if (eventAsHostResponse.Items.Any())
+        var request = new QueryRequest
         {
-            return eventAsHostResponse.Items.Select(ToDomainEventModel).Single();
+            TableName = _dynamoDbOptions.TableName,
+            KeyConditionExpression = "pk = :pk",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":pk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.Event) } },
+            },
+        };
+
+        var response = await _dynamoDb.QueryAsync(request);
+
+        if (!response.Items.Any())
+        {
+            return null;
         }
 
-        if (eventAsGuestResponse.Items.Any())
-        {
-            return eventAsGuestResponse.Items.Select(ToDomainEventModel).Single();
-        }
+        var eventSnapshot = ToSnapshot<EventDataSnapshot>(response.Items.Single(item => item["sk"].S == KeyIdentifiers.EventData));
 
-        return null;
+        var participantsSnapshot = response.Items
+            .Where(item => item["sk"].S != KeyIdentifiers.EventData)
+            .Select(ToSnapshot<EventParticipantSnapshot>);
+
+        return (eventSnapshot, participantsSnapshot).Adapt<Event>();
     }
 
     public async Task<IEnumerable<Event>> GetAll(Guid userId)
     {
+        _logger.LogInformation("Get all events for user UserId {UserId}, GsiName: {GsiName}", userId, Gsi1Name);
+
         var queryRequest = new QueryRequest
         {
-            TableName = _dynamoDbOptions.TableName,
-            KeyConditionExpression = "pk = :pk AND begins_with(sk, :sk)",
+            TableName = TableName,
+            IndexName = Gsi1Name,
+            KeyConditionExpression = "gsi1pk = :pk AND begins_with(sk, :sk)",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
-                { ":pk", new AttributeValue { S = $"{KeyIdentifiers.User}{KeyIdentifiers.Separator}{userId}" } },
+                { ":pk", new AttributeValue { S = userId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
                 { ":sk", new AttributeValue { S = KeyIdentifiers.Event } },
             },
         };
 
         var response = await _dynamoDb.QueryAsync(queryRequest);
 
-        return response.Items.Select(ToDomainEventModel);
+        _logger.LogInformation("Response: {Response}", response.Items.First());
+
+        var getEventTasks = response.Items.Select(item => Get(Guid.Parse(item["pk"].S.RemoveKeyIdentifiers())));
+        var events = await Task.WhenAll(getEventTasks);
+
+        return events.Where(e => e != null).Cast<Event>();
     }
 
     public async Task<bool> Add(Event @event)
     {
         _logger.LogInformation("Add event Title: {Title}, Description: {Description}", @event.Title, @event.Description);
 
-        var eventSnapshot = @event.Adapt<EventSnapshot>();
+        var eventSnapshot = @event.Adapt<EventDataSnapshot>();
+        var eventAsJson = JsonSerializer.Serialize(eventSnapshot);
+        var eventAsAttributes = Document.FromJson(eventAsJson).ToAttributeMap();
+
+        var createItemRequest = new PutItemRequest
+        {
+            TableName = _dynamoDbOptions.TableName, Item = eventAsAttributes, ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
+        };
+
+        var response = await _dynamoDb.PutItemAsync(createItemRequest);
+
+        if (response.HttpStatusCode != HttpStatusCode.OK)
+        {
+            return false;
+        }
+
+        return await AddParticipant(@event.Id, @event.HostId, ParticipantRoles.Host);
+    }
+
+    public async Task<bool> Join(Guid eventId, Guid guestId)
+    {
+        _logger.LogInformation("Join event EventId: {EventId}, GuestId: {GuestId}", eventId, guestId);
+
+        return await AddParticipant(eventId, guestId, ParticipantRoles.Guest);
+    }
+
+    private static T ToSnapshot<T>(Dictionary<string, AttributeValue> item)
+    {
+        var json = Document.FromAttributeMap(item).ToJson();
+        var eventSnapshot = JsonSerializer.Deserialize<T>(json)!;
+
+        return eventSnapshot;
+    }
+
+    private async Task<bool> AddParticipant(Guid eventId, Guid userId, string role)
+    {
+        var eventSnapshot = (eventId, userId, role).Adapt<EventParticipantSnapshot>();
         var eventAsJson = JsonSerializer.Serialize(eventSnapshot);
         var eventAsAttributes = Document.FromJson(eventAsJson).ToAttributeMap();
 
@@ -86,54 +140,5 @@ public class EventRepository : RepositoryBase, IEventRepository
         var response = await _dynamoDb.PutItemAsync(createItemRequest);
 
         return response.HttpStatusCode == HttpStatusCode.OK;
-    }
-
-    public async Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds)
-    {
-        var guestIdsAsAttributes = guestIds.Select(id => new AttributeValue { S = id.ToString() }).ToList();
-
-        var updateRequest = new UpdateItemRequest
-        {
-            TableName = TableName,
-            Key = new Dictionary<string, AttributeValue>
-            {
-                { "pk", new AttributeValue { S = hostId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
-                { "sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.EventHost) } },
-            },
-            UpdateExpression = "SET #guestIds = :guestIdsNewValue, #updatedAt = :updatedAtNewValue",
-            ExpressionAttributeNames = new Dictionary<string, string> { { "#guestIds", "guestIds" }, { "#updatedAt", "updatedAt" }, },
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                { ":guestIdsNewValue", new AttributeValue { L = guestIdsAsAttributes } },
-                { ":updatedAtNewValue", new AttributeValue { S = DateTime.UtcNow.ToString("O") } },
-            },
-        };
-
-        var response = await _dynamoDb.UpdateItemAsync(updateRequest);
-
-        return response.HttpStatusCode == HttpStatusCode.OK;
-    }
-
-    private static Event ToDomainEventModel(Dictionary<string, AttributeValue> item)
-    {
-        var json = Document.FromAttributeMap(item).ToJson();
-
-        var eventSnapshot = JsonSerializer.Deserialize<EventSnapshot>(json)!;
-
-        return eventSnapshot.Adapt<Event>();
-    }
-
-    private QueryRequest EventQueryRequest(Guid userId, Guid eventId, string hostOrGuestKeyIdentifier)
-    {
-        return new QueryRequest
-        {
-            TableName = _dynamoDbOptions.TableName,
-            KeyConditionExpression = "pk = :pk AND begins_with(sk, :sk)",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                { ":pk", new AttributeValue { S = userId.PrependKeyIdentifiers(KeyIdentifiers.User) } },
-                { ":sk", new AttributeValue { S = eventId.PrependKeyIdentifiers(hostOrGuestKeyIdentifier) } },
-            },
-        };
     }
 }

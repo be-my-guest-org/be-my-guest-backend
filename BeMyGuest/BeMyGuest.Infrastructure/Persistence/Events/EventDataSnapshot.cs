@@ -4,11 +4,11 @@ using BeMyGuest.Infrastructure.Persistence.Common;
 
 namespace BeMyGuest.Infrastructure.Persistence.Events;
 
-public record EventSnapshot(
+public record EventDataSnapshot(
     [property: JsonPropertyName("pk")]
-    string HostId,
-    [property: JsonPropertyName("sk")]
     string EventId,
+    [property: JsonPropertyName("sk")]
+    string EventData,
     [property: JsonPropertyName("title")]
     string Title,
     [property: JsonPropertyName("description")]
@@ -19,8 +19,6 @@ public record EventSnapshot(
     Location Where,
     [property: JsonPropertyName("maxParticipants")]
     int MaxParticipants,
-    [property: JsonPropertyName("guestIds")]
-    List<Guid> Guests,
     [property: JsonPropertyName("status")]
     string Status,
     DateTime CreatedAt,

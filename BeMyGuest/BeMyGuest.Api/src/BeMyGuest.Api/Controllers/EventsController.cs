@@ -63,7 +63,7 @@ public class EventsController : AbstractController
             _ => InternalServerError());
     }
 
-    [HttpPost("{hostId}/{eventId}/join")]
+    [HttpPost("{eventId}/join")]
     [SuppressMessage("ReSharper", "UnusedParameter.Local")]
     public async Task<ActionResult> JoinEvent([FromRoute] JoinEventRequest request)
     {

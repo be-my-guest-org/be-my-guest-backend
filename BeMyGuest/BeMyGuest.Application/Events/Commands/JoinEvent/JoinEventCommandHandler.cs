@@ -18,7 +18,7 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
 
     public async Task<JoinEventResult> Handle(JoinEventCommand command, CancellationToken cancellationToken)
     {
-        var @event = await _eventRepository.Get(command.HostId, command.EventId);
+        var @event = await _eventRepository.Get(command.EventId);
 
         if (@event is null)
         {
@@ -37,11 +37,9 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
             return result.AsT2;
         }
 
-        var updateGuestResult = await _eventRepository.UpdateGuests(
-            @event.HostId,
-            _currentUserData.UserId,
+        var updateGuestResult = await _eventRepository.Join(
             @event.Id,
-            @event.Guests);
+            _currentUserData.UserId);
 
         if (!updateGuestResult)
         {

@@ -1,5 +1,4 @@
-﻿using BeMyGuest.Common.User;
-using BeMyGuest.Domain.Events;
+﻿using BeMyGuest.Domain.Events;
 using MediatR;
 using OneOf.Types;
 
@@ -7,18 +6,16 @@ namespace BeMyGuest.Application.Events.Queries.GetEvent;
 
 public class GetEventQueryHandler : IRequestHandler<GetEventQuery, GetEventResult>
 {
-    private readonly CurrentUserData _currentUserData;
     private readonly IEventRepository _eventRepository;
 
-    public GetEventQueryHandler(IEventRepository eventRepository, CurrentUserData currentUserData)
+    public GetEventQueryHandler(IEventRepository eventRepository)
     {
         _eventRepository = eventRepository;
-        _currentUserData = currentUserData;
     }
 
     public async Task<GetEventResult> Handle(GetEventQuery query, CancellationToken cancellationToken)
     {
-        var @event = await _eventRepository.Get(_currentUserData.UserId, query.EventId);
+        var @event = await _eventRepository.Get(query.EventId);
 
         if (@event is null)
         {

@@ -2,11 +2,11 @@
 
 public interface IEventRepository
 {
-    Task<Event?> Get(Guid userId, Guid eventId);
+    Task<Event?> Get(Guid eventId);
 
     Task<IEnumerable<Event>> GetAll(Guid userId);
 
     Task<bool> Add(Event @event);
 
-    Task<bool> UpdateGuests(Guid hostId, Guid guestId, Guid eventId, IEnumerable<Guid> guestIds);
+    Task<bool> Join(Guid eventId, Guid guestId);
 }
