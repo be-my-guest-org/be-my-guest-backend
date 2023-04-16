@@ -48,8 +48,8 @@ public class EventMappingConfig : IRegister
     private static void RegisterJoin(TypeAdapterConfig config)
     {
         config.NewConfig<(Guid eventId, Guid guestId, string role), EventParticipantSnapshot>()
-            .Map(dest => dest.EventId, src => src.eventId.PrependKeyIdentifiers(KeyIdentifiers.EventData))
-            .Map(dest => dest.EventParticipantId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User, src.eventId.ToString(), KeyIdentifiers.Event))
+            .Map(dest => dest.EventId, src => src.eventId.PrependKeyIdentifiers(KeyIdentifiers.Event))
+            .Map(dest => dest.EventParticipantId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.Event, src.eventId.ToString(), KeyIdentifiers.User))
             .Map(dest => dest.Role, src => src.role)
             .Map(dest => dest.UserId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User))
             .Map(dest => dest.CreatedAt, src => DateTime.UtcNow);

@@ -39,11 +39,10 @@ public class EventRepository : RepositoryBase, IEventRepository
         var request = new QueryRequest
         {
             TableName = _dynamoDbOptions.TableName,
-            KeyConditionExpression = "pk = :pk AND sk = :sk",
+            KeyConditionExpression = "pk = :pk",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":pk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.Event) } },
-                { ":sk", new AttributeValue { S = KeyIdentifiers.EventData, } },
             },
         };
 
@@ -65,6 +64,8 @@ public class EventRepository : RepositoryBase, IEventRepository
 
     public async Task<IEnumerable<Event>> GetAll(Guid userId)
     {
+        _logger.LogInformation("Get all events for user UserId {UserId}, GsiName: {GsiName}", userId, Gsi1Name);
+
         var queryRequest = new QueryRequest
         {
             TableName = TableName,
@@ -78,6 +79,8 @@ public class EventRepository : RepositoryBase, IEventRepository
         };
 
         var response = await _dynamoDb.QueryAsync(queryRequest);
+
+        _logger.LogInformation("Response: {Response}", response.Items.First());
 
         var getEventTasks = response.Items.Select(item => Get(Guid.Parse(item["pk"].S.RemoveKeyIdentifiers())));
         var events = await Task.WhenAll(getEventTasks);
