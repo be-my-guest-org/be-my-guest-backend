@@ -10,6 +10,7 @@ export interface DynamoDbTableProps {
 
 export class DynamoDbTable extends Construct {
   public readonly tableName: string;
+  public readonly gsiName: string;
 
   constructor(scope: Construct, id: string, props?: DynamoDbTableProps) {
     super(scope, id);
@@ -21,6 +22,19 @@ export class DynamoDbTable extends Construct {
       readCapacity: 1,
       writeCapacity: 1,
       removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    this.gsiName = "gsi1";
+
+    table.addGlobalSecondaryIndex({
+      indexName: this.gsiName,
+      partitionKey: { name: "gsi1pk", type: AttributeType.STRING },
+      sortKey: {
+        name: "sk",
+        type: AttributeType.STRING,
+      },
+      readCapacity: 1,
+      writeCapacity: 1,
     });
 
     table

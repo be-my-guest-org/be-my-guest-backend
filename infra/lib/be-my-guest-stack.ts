@@ -13,6 +13,7 @@ import { DynamoDbTable } from "./constructs/dynamo-db-table";
 
 export class BeMyGuestStack extends cdk.Stack {
   private readonly TABLE_NAME_ENV_VAR = "DynamoDb__TableName";
+  private readonly GSI1_NAME_ENV_VAR = "DynamoDb__Gsi1Name";
   private readonly HOSTED_ZONE_NAME = "jordangottardo.com";
   private readonly HOSTED_ZONE_ID = "Z027129813KQ3AFNBS4SO";
 
@@ -52,6 +53,11 @@ export class BeMyGuestStack extends cdk.Stack {
     beMyGuestLambda.addEnvironment(
       this.TABLE_NAME_ENV_VAR,
       dynamoDbTable.tableName
+    );
+
+    beMyGuestLambda.addEnvironment(
+      this.GSI1_NAME_ENV_VAR,
+      dynamoDbTable.gsiName
     );
 
     const existingHostedZone = HostedZone.fromHostedZoneAttributes(
