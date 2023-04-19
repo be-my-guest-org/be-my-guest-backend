@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.101.55"/>
+        <PackageReference Include="DynamoDB.Geo" Version="1.0.1"/>
         <PackageReference Include="Mapster" Version="7.3.0"/>
         <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0"/>

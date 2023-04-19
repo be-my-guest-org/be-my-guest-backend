@@ -6,5 +6,7 @@ public class DynamoDbOptions
 
     public string TableName { get; set; } = null!;
 
+    public string GeoDataTableName { get; set; } = null!;
+
     public string Gsi1Name { get; set; } = null!;
 }
