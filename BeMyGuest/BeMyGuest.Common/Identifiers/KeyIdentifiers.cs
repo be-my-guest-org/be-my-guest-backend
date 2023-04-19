@@ -9,4 +9,5 @@ public static class KeyIdentifiers
     public const string Profile = "PROFILE";
     public const string Event = "EVENT";
     public const string EventData = "EVENTDATA";
+    public const string Sk = "sk";
 }
