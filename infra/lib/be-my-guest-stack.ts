@@ -10,9 +10,11 @@ import { Api } from "./constructs/api";
 import { CognitoUserPool } from "./constructs/cognito-user-pool";
 import { DotNetLambdaFunction } from "./constructs/dot-net-lambda-function";
 import { DynamoDbTable } from "./constructs/dynamo-db-table";
+import { GeoDataDynamoDbTable } from "./constructs/geo-data-dynamodb-table";
 
 export class BeMyGuestStack extends cdk.Stack {
   private readonly TABLE_NAME_ENV_VAR = "DynamoDb__TableName";
+  private readonly GEO_DATA_TABLE_NAME_ENV_VAR = "DynamoDb__GeoDataTableName";
   private readonly GSI1_NAME_ENV_VAR = "DynamoDb__Gsi1Name";
   private readonly HOSTED_ZONE_NAME = "jordangottardo.com";
   private readonly HOSTED_ZONE_ID = "Z027129813KQ3AFNBS4SO";
@@ -45,6 +47,14 @@ export class BeMyGuestStack extends cdk.Stack {
       ],
     });
 
+    const geoDataDynamoDbTable = new GeoDataDynamoDbTable(
+      this,
+      "BeMyGuestGeoDataTable",
+      {
+        readWriteDataGrantees: [beMyGuestLambda.lambdaFunction],
+      }
+    );
+
     postUserConfirmationLambda.addEnvironment(
       this.TABLE_NAME_ENV_VAR,
       dynamoDbTable.tableName
@@ -58,6 +68,11 @@ export class BeMyGuestStack extends cdk.Stack {
     beMyGuestLambda.addEnvironment(
       this.GSI1_NAME_ENV_VAR,
       dynamoDbTable.gsiName
+    );
+
+    beMyGuestLambda.addEnvironment(
+      this.GSI1_NAME_ENV_VAR,
+      geoDataDynamoDbTable.tableName
     );
 
     const existingHostedZone = HostedZone.fromHostedZoneAttributes(
