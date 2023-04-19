@@ -71,7 +71,7 @@ export class BeMyGuestStack extends cdk.Stack {
     );
 
     beMyGuestLambda.addEnvironment(
-      this.GSI1_NAME_ENV_VAR,
+      this.GEO_DATA_TABLE_NAME_ENV_VAR,
       geoDataDynamoDbTable.tableName
     );
 
