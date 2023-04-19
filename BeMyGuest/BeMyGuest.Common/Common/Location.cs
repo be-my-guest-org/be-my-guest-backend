@@ -16,4 +16,13 @@ public record Location(
     [property: JsonPropertyName("province")]
     string Province,
     [property: JsonPropertyName("country")]
-    string Country);
+    string Country,
+    [property: JsonPropertyName("coordinates")]
+    Coordinates Coordinates
+);
+
+public record Coordinates(
+    [property: JsonPropertyName("latitude")]
+    double Latitude,
+    [property: JsonPropertyName("longitude")]
+    double Longitude);
