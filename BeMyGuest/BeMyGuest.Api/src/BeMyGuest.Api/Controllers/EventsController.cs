@@ -4,9 +4,11 @@ using BeMyGuest.Application.Events.Commands.CreateEvent;
 using BeMyGuest.Application.Events.Commands.JoinEvent;
 using BeMyGuest.Application.Events.Queries.GetAllCurrentUserEvents;
 using BeMyGuest.Application.Events.Queries.GetEvent;
+using BeMyGuest.Application.Events.Queries.GetInRadius;
 using BeMyGuest.Contracts.Events.Create;
 using BeMyGuest.Contracts.Events.Get;
 using BeMyGuest.Contracts.Events.GetAllForCurrentUser;
+using BeMyGuest.Contracts.Events.GetInRadius;
 using BeMyGuest.Contracts.Events.Join;
 using Mapster;
 using MapsterMapper;
@@ -38,6 +40,17 @@ public class EventsController : AbstractController
         return result.Match<ActionResult<GetEventResponse>>(
             evt => Ok(_mapper.Map<GetEventResponse>(evt)),
             _ => NotFound());
+    }
+
+    [HttpGet("inRadius")]
+    public async Task<ActionResult<GetEventsInRadiusResponse>> GetEventsInRadius([FromQuery] GetEventsInRadiusRequest request)
+    {
+        var query = request.Adapt<GetEventsInRadiusQuery>();
+
+        var result = await _sender.Send(query);
+
+        return result.Match<ActionResult<GetEventsInRadiusResponse>>(
+            evt => Ok(new GetEventsInRadiusResponse(evt.Select(ev => ev.Adapt<GetEventResponse>()))));
     }
 
     [HttpGet("")]

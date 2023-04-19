@@ -1,10 +1,12 @@
 ﻿using BeMyGuest.Application.Events.Commands.CreateEvent;
 using BeMyGuest.Application.Events.Queries.GetEvent;
+using BeMyGuest.Application.Events.Queries.GetInRadius;
 using BeMyGuest.Common.Common;
 using BeMyGuest.Common.Identifiers;
 using BeMyGuest.Common.Utils;
 using BeMyGuest.Contracts.Events.Create;
 using BeMyGuest.Contracts.Events.Get;
+using BeMyGuest.Contracts.Events.GetInRadius;
 using BeMyGuest.Domain.Events;
 using BeMyGuest.Domain.Events.ValueObjects;
 using BeMyGuest.Infrastructure.Persistence.Events;
@@ -18,7 +20,14 @@ public class EventMappingConfig : IRegister
     {
         RegisterCreate(config);
         RegisterGet(config);
+        RegisterGetInRadius(config);
         RegisterJoin(config);
+    }
+
+    private static void RegisterGetInRadius(TypeAdapterConfig config)
+    {
+        config.NewConfig<GetEventsInRadiusRequest, GetEventsInRadiusQuery>()
+            .Map(dest => dest.Coordinates, src => new Coordinates(src.Latitude, src.Longitude));
     }
 
     private static void RegisterGet(TypeAdapterConfig config)
