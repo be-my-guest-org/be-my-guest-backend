@@ -48,7 +48,7 @@ public class Event : EntityBase<Guid>
 
     public IReadOnlyCollection<Guid> Guests => _guests.AsReadOnly();
 
-    public Status Status { get; }
+    public Status Status { get; private set; }
 
     public static Event Create(
         string title,
@@ -101,7 +101,7 @@ public class Event : EntityBase<Guid>
 
     public OneOf<Success, TooManyGuests, GuestAlreadyJoined> AddGuest(Guid guestId)
     {
-        if (_guests.Count >= MaxParticipants - 1)
+        if (IsFull())
         {
             return new TooManyGuests();
         }
@@ -113,6 +113,16 @@ public class Event : EntityBase<Guid>
 
         _guests.Add(guestId);
 
+        if (IsFull())
+        {
+            Status = Status.Full();
+        }
+
         return new Success();
+    }
+
+    private bool IsFull()
+    {
+        return _guests.Count >= MaxParticipants - 1;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace BeMyGuest.Domain.Events;
+﻿using BeMyGuest.Domain.Events.ValueObjects;
+
+namespace BeMyGuest.Domain.Events;
 
 public interface IEventRepository
 {
@@ -9,4 +11,6 @@ public interface IEventRepository
     Task<bool> Add(Event @event);
 
     Task<bool> Join(Guid eventId, Guid guestId);
+
+    Task<bool> UpdateStatus(Guid eventId, Status eventStatus);
 }
