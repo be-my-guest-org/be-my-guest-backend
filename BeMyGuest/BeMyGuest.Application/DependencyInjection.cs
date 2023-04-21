@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using BeMyGuest.Application.Common.PipelineBehaviors;
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeMyGuest.Application;
@@ -9,6 +11,7 @@ public static class DependencyInjection
     {
         var markerType = typeof(DependencyInjection);
 
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssemblyContaining(markerType);

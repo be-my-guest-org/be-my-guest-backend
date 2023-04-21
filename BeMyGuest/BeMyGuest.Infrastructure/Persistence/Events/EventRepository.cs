@@ -80,8 +80,6 @@ public class EventRepository : RepositoryBase, IEventRepository
 
         var response = await _dynamoDb.QueryAsync(queryRequest);
 
-        _logger.LogInformation("Response: {Response}", response.Items.First());
-
         var getEventTasks = response.Items.Select(item => Get(Guid.Parse(item["pk"].S.RemoveKeyIdentifiers())));
         var events = await Task.WhenAll(getEventTasks);
 
