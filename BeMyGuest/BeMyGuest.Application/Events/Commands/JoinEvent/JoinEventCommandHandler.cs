@@ -25,13 +25,16 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
             return new NotFound();
         }
 
+        var oldStatus = @event.Status;
         var result = @event.AddGuest(_currentUserData.UserId);
 
+        // TooManyGuests
         if (result.IsT1)
         {
             return result.AsT1;
         }
 
+        // Already joined
         if (result.IsT2)
         {
             return result.AsT2;
@@ -41,7 +44,13 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
             @event.Id,
             _currentUserData.UserId);
 
-        if (!updateGuestResult)
+        bool updateStatusResult = true;
+        if (@event.Status != oldStatus)
+        {
+            updateStatusResult = await _eventRepository.UpdateStatus(@event.Id, @event.Status);
+        }
+
+        if (!updateGuestResult || !updateStatusResult)
         {
             return new Error();
         }

@@ -7,6 +7,7 @@ using BeMyGuest.Common.Common;
 using BeMyGuest.Common.Identifiers;
 using BeMyGuest.Common.Utils;
 using BeMyGuest.Domain.Events;
+using BeMyGuest.Domain.Events.ValueObjects;
 using BeMyGuest.Infrastructure.Configuration;
 using BeMyGuest.Infrastructure.Persistence.Common;
 using Mapster;
@@ -114,6 +115,28 @@ public class EventRepository : RepositoryBase, IEventRepository
         _logger.LogInformation("Join event EventId: {EventId}, GuestId: {GuestId}", eventId, guestId);
 
         return await AddParticipant(eventId, guestId, ParticipantRoles.Guest);
+    }
+
+    public async Task<bool> UpdateStatus(Guid eventId, Status status)
+    {
+        _logger.LogInformation("UpdateStatus event EventId: {EventId}, new status: {Status}", eventId, status.Value);
+
+        var key = new Dictionary<string, AttributeValue>
+        {
+            { "pk", new AttributeValue { S = eventId.PrependKeyIdentifiers(KeyIdentifiers.Event) } },
+            { "sk", new AttributeValue { S = KeyIdentifiers.EventData, } },
+        };
+
+        var updates = new Dictionary<string, AttributeValueUpdate>
+        {
+            { "status", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = status.Value } } },
+        };
+
+        var request = new UpdateItemRequest { TableName = TableName, Key = key, AttributeUpdates = updates };
+
+        var response = await _dynamoDb.UpdateItemAsync(request);
+
+        return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
     private static T ToSnapshot<T>(Dictionary<string, AttributeValue> item)

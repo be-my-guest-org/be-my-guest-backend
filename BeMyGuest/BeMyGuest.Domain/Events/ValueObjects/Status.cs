@@ -1,6 +1,6 @@
 ﻿namespace BeMyGuest.Domain.Events.ValueObjects;
 
-public class Status
+public record Status
 {
     private const string OpenValue = "Open";
     private const string ClosedValue = "Closed";
