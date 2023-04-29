@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Numerics;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace PostConfirmationLambda;
 
@@ -20,7 +22,10 @@ public record UserDto(
 )
 {
     [JsonPropertyName("pk")]
-    public string Pk => $"USER#{Sub}";
+    public BigInteger Pk => BigInteger.Parse(Regex.Replace(Sub.ToString(), "[^0-9]", string.Empty));
+
+    [JsonPropertyName("gsi1pk")]
+    public string Gsi1Pk => $"USER#{Sub}";
 
     [JsonPropertyName("sk")]
     public string Sk => $"PROFILE#{Username}";

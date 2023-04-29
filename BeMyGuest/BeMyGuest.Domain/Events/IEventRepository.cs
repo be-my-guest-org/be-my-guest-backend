@@ -10,7 +10,7 @@ public interface IEventRepository
 
     Task<bool> Add(Event @event);
 
-    Task<bool> Join(Guid eventId, Guid guestId);
+    Task<bool> Join(Event @event, Guid guestId);
 
     Task<bool> UpdateStatus(Guid eventId, Status eventStatus);
 }

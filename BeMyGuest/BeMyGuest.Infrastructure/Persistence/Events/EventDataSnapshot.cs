@@ -1,12 +1,15 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Numerics;
+using System.Text.Json.Serialization;
 using BeMyGuest.Common.Common;
 using BeMyGuest.Infrastructure.Persistence.Common;
 
 namespace BeMyGuest.Infrastructure.Persistence.Events;
 
 public record EventDataSnapshot(
-    [property: JsonPropertyName("pk")]
+    [property: JsonPropertyName("gsi1pk")]
     string EventId,
+    [property: JsonPropertyName("pk")]
+    BigInteger Pk,
     [property: JsonPropertyName("sk")]
     string EventData,
     [property: JsonPropertyName("title")]

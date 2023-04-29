@@ -41,7 +41,7 @@ public class JoinEventCommandHandler : IRequestHandler<JoinEventCommand, JoinEve
         }
 
         var updateGuestResult = await _eventRepository.Join(
-            @event.Id,
+            @event,
             _currentUserData.UserId);
 
         bool updateStatusResult = true;

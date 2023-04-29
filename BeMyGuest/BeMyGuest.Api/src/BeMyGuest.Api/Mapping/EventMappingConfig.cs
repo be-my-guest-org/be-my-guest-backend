@@ -46,6 +46,7 @@ public class EventMappingConfig : IRegister
         config.NewConfig<CreateEventRequest, CreateEventCommand>();
 
         config.NewConfig<Event, EventDataSnapshot>()
+            .Map(dest => dest.Pk, src => NumericIdGenerator.Generate())
             .Map(dest => dest.EventId, src => src.Id.PrependKeyIdentifiers(KeyIdentifiers.Event))
             .Map(dest => dest.EventData, src => KeyIdentifiers.EventData)
             .Map(dest => dest.Status, src => src.Status.Value);
