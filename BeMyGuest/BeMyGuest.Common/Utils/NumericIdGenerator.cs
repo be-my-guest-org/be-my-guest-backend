@@ -1,13 +1,10 @@
-﻿using System.Numerics;
-using System.Text.RegularExpressions;
-
-namespace BeMyGuest.Common.Utils;
+﻿namespace BeMyGuest.Common.Utils;
 
 public static class NumericIdGenerator
 {
-    public static BigInteger Generate()
+    public static long Generate()
     {
-        var guid = Guid.NewGuid();
-        return BigInteger.Parse(Regex.Replace(guid.ToString(), "[^0-9]", string.Empty));
+        var random = new Random();
+        return random.NextInt64();
     }
 }

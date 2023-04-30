@@ -1,11 +1,9 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.Geo;
 using BeMyGuest.Domain.Events;
-using BeMyGuest.Domain.GeoData;
 using BeMyGuest.Domain.Users;
 using BeMyGuest.Infrastructure.Configuration;
 using BeMyGuest.Infrastructure.Persistence.Events;
-using BeMyGuest.Infrastructure.Persistence.Geodata;
 using BeMyGuest.Infrastructure.Persistence.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +19,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
-        services.AddScoped<IGeoDataRepository, GeoDataRepository>();
 
         AddDynamoDb(services, configuration);
         AddDynamoDbGeo(services);
@@ -41,8 +38,7 @@ public static class DependencyInjection
         services.AddScoped<GeoDataManager>(provider =>
         {
             var dynamoDbOptions = provider.GetRequiredService<IOptions<DynamoDbOptions>>().Value;
-            Console.WriteLine($"TABLENAME= {dynamoDbOptions.GeoDataTableName}");
-            var geoDataConfig = new GeoDataManagerConfiguration(provider.GetRequiredService<AmazonDynamoDBClient>(), dynamoDbOptions.GeoDataTableName)
+            var geoDataConfig = new GeoDataManagerConfiguration(provider.GetRequiredService<AmazonDynamoDBClient>(), dynamoDbOptions.TableName)
             {
                 HashKeyAttributeName = "pk", RangeKeyAttributeName = "sk",
             };

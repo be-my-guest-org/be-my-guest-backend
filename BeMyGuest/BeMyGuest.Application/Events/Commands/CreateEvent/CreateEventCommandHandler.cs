@@ -1,7 +1,5 @@
-﻿using BeMyGuest.Common.Identifiers;
-using BeMyGuest.Common.User;
+﻿using BeMyGuest.Common.User;
 using BeMyGuest.Domain.Events;
-using BeMyGuest.Domain.GeoData;
 using MediatR;
 using OneOf.Types;
 
@@ -11,12 +9,10 @@ public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Cre
 {
     private readonly CurrentUserData _currentUserData;
     private readonly IEventRepository _eventRepository;
-    private readonly IGeoDataRepository _geoDataRepository;
 
-    public CreateEventCommandHandler(IEventRepository eventRepository, IGeoDataRepository geoDataRepository, CurrentUserData currentUserData)
+    public CreateEventCommandHandler(IEventRepository eventRepository, CurrentUserData currentUserData)
     {
         _eventRepository = eventRepository;
-        _geoDataRepository = geoDataRepository;
         _currentUserData = currentUserData;
     }
 
@@ -33,13 +29,6 @@ public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Cre
         var added = await _eventRepository.Add(@event);
 
         if (!added)
-        {
-            return new Error();
-        }
-
-        var geoPointAdded = await _geoDataRepository.Add(@event.Where.Coordinates, KeyIdentifiers.Event, @event.Id);
-
-        if (!geoPointAdded)
         {
             return new Error();
         }

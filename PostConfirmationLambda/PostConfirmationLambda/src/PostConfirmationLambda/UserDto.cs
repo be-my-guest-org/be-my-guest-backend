@@ -22,7 +22,7 @@ public record UserDto(
 )
 {
     [JsonPropertyName("pk")]
-    public BigInteger Pk => BigInteger.Parse(Regex.Replace(Sub.ToString(), "[^0-9]", string.Empty));
+    public long Pk => new Random().NextInt64();
 
     [JsonPropertyName("gsi1pk")]
     public string Gsi1Pk => $"USER#{Sub}";

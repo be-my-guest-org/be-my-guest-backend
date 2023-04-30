@@ -46,7 +46,6 @@ public class EventMappingConfig : IRegister
         config.NewConfig<CreateEventRequest, CreateEventCommand>();
 
         config.NewConfig<Event, EventDataSnapshot>()
-            .Map(dest => dest.Pk, src => NumericIdGenerator.Generate())
             .Map(dest => dest.EventId, src => src.Id.PrependKeyIdentifiers(KeyIdentifiers.Event))
             .Map(dest => dest.EventData, src => KeyIdentifiers.EventData)
             .Map(dest => dest.Status, src => src.Status.Value);
@@ -59,7 +58,6 @@ public class EventMappingConfig : IRegister
     {
         config.NewConfig<(Guid eventId, Guid guestId, string role), EventParticipantSnapshot>()
             .Map(dest => dest.EventId, src => src.eventId.PrependKeyIdentifiers(KeyIdentifiers.Event))
-            .Map(dest => dest.EventParticipantId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.Event, src.eventId.ToString(), KeyIdentifiers.User))
             .Map(dest => dest.Role, src => src.role)
             .Map(dest => dest.UserId, src => src.guestId.PrependKeyIdentifiers(KeyIdentifiers.User))
             .Map(dest => dest.CreatedAt, src => DateTime.UtcNow);
