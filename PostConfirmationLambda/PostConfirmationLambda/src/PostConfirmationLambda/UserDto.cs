@@ -22,7 +22,9 @@ public record UserDto(
 )
 {
     [JsonPropertyName("pk")]
-    public long Pk => new Random().NextInt64();
+    // We're taking the numeric part of Username (e.g. Google_123456) and stripping non numeric characters. We're then
+    // building a long based on that avoiding overflow
+    public long Pk => long.Parse(Sk.Where(char.IsDigit).Take(19).ToArray());
 
     [JsonPropertyName("gsi1pk")]
     public string Gsi1Pk => $"USER#{Sub}";

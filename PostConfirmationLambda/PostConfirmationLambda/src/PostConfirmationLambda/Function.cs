@@ -29,7 +29,6 @@ public class Function
         var createItemRequest = new PutItemRequest
         {
             TableName = Environment.GetEnvironmentVariable(TableNameEnvVar), Item = userAttributes,
-            // ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)",
         };
 
         var response = dynamoDbClient.PutItemAsync(createItemRequest).Result;
