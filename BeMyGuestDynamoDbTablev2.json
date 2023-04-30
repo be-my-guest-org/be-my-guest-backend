@@ -1,0 +1,258 @@
+{
+  "ModelName": "BeMyGuestV2",
+  "ModelMetadata": {
+    "Author": "",
+    "DateCreated": "Apr 28, 2023, 07:48 PM",
+    "DateLastModified": "Apr 28, 2023, 10:00 PM",
+    "Description": "",
+    "AWSService": "Amazon DynamoDB",
+    "Version": "3.0"
+  },
+  "DataModel": [
+    {
+      "TableName": "BeMyGuestTable",
+      "KeyAttributes": {
+        "PartitionKey": {
+          "AttributeName": "pk",
+          "AttributeType": "N"
+        },
+        "SortKey": {
+          "AttributeName": "sk",
+          "AttributeType": "S"
+        }
+      },
+      "NonKeyAttributes": [
+        {
+          "AttributeName": "geohash",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "geoJson",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "gsi1pk",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "gsi2pk",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "description",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "maxParticipants",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "role",
+          "AttributeType": "S"
+        }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "gsi1",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "gsi1pk",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "sk",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        },
+        {
+          "IndexName": "gsi2",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "gsi2pk",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "sk",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        }
+      ],
+      "TableData": [
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENTDATA#e1"
+          },
+          "geohash": {
+            "N": "5150209037486132477"
+          },
+          "geoJson": {
+            "S": "json"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e1"
+          },
+          "description": {
+            "S": "Cena1"
+          },
+          "maxParticipants": {
+            "N": "10"
+          }
+        },
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENTDATA#e2"
+          },
+          "geohash": {
+            "N": "5150209037486132477"
+          },
+          "geoJson": {
+            "S": "json"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e2"
+          },
+          "description": {
+            "S": "Pranzo1"
+          },
+          "maxParticipants": {
+            "N": "5"
+          }
+        },
+        {
+          "pk": {
+            "N": "111"
+          },
+          "sk": {
+            "S": "USER#u1"
+          },
+          "gsi1pk": {
+            "S": "PROFILE#p1"
+          }
+        },
+        {
+          "pk": {
+            "N": "222"
+          },
+          "sk": {
+            "S": "USER#u2"
+          },
+          "gsi1pk": {
+            "S": "PROFILE#p2"
+          }
+        },
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENT#e1#USER#u1"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e1"
+          },
+          "gsi2pk": {
+            "S": "USER#u1"
+          },
+          "role": {
+            "S": "host"
+          }
+        },
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENT#e1#USER#u2"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e1"
+          },
+          "gsi2pk": {
+            "S": "USER#u2"
+          },
+          "role": {
+            "S": "guest"
+          }
+        },
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENT#e2#USER#u2"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e2"
+          },
+          "gsi2pk": {
+            "S": "USER#u2"
+          },
+          "role": {
+            "S": "host"
+          }
+        },
+        {
+          "pk": {
+            "N": "515020"
+          },
+          "sk": {
+            "S": "EVENT#e2#USER#u1"
+          },
+          "gsi1pk": {
+            "S": "EVENT#e2"
+          },
+          "gsi2pk": {
+            "S": "USER#u1"
+          },
+          "role": {
+            "S": "guest"
+          }
+        }
+      ],
+      "DataAccess": {
+        "MySql": {}
+      },
+      "BillingMode": "PROVISIONED",
+      "ProvisionedCapacitySettings": {
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "AutoScalingRead": {
+          "ScalableTargetRequest": {
+            "MinCapacity": 1,
+            "MaxCapacity": 10,
+            "ServiceRole": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+          },
+          "ScalingPolicyConfiguration": {
+            "TargetValue": 70
+          }
+        },
+        "AutoScalingWrite": {
+          "ScalableTargetRequest": {
+            "MinCapacity": 1,
+            "MaxCapacity": 10,
+            "ServiceRole": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+          },
+          "ScalingPolicyConfiguration": {
+            "TargetValue": 70
+          }
+        }
+      }
+    }
+  ]
+}

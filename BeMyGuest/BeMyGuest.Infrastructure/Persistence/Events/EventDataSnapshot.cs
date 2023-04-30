@@ -5,7 +5,7 @@ using BeMyGuest.Infrastructure.Persistence.Common;
 namespace BeMyGuest.Infrastructure.Persistence.Events;
 
 public record EventDataSnapshot(
-    [property: JsonPropertyName("pk")]
+    [property: JsonPropertyName("gsi1pk")]
     string EventId,
     [property: JsonPropertyName("sk")]
     string EventData,
