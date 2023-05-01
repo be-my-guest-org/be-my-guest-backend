@@ -3,7 +3,6 @@ export class Constants {
   public static readonly GOOGLE_OAUTH_CLIENT_ID =
     "696503683561-n84jq1davll1n4op87frvlj70c6f54dt.apps.googleusercontent.com";
   public static readonly GOOGLE_CLIENT_SECRET_NAME = "googleClientSecret";
-  public static readonly SUBDOMAIN_NAME = "be-my-guest";
 }
 
 export class Environments {

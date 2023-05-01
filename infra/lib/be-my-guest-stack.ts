@@ -35,7 +35,7 @@ export class BeMyGuestStack extends cdk.Stack {
     const userPool = new CognitoUserPool(this, "BeMyGuestUserPool", {
       postConfirmationLambda: postUserConfirmationLambda.lambdaFunction,
       googleOauthClientId: Constants.GOOGLE_OAUTH_CLIENT_ID,
-      environmentName: awsAccount
+      environmentName: awsAccount,
     });
 
     const beMyGuestLambda = new DotNetLambdaFunction(this, "BeMyGuestLambda", {
@@ -90,7 +90,6 @@ export class BeMyGuestStack extends cdk.Stack {
       certificate: certificate,
       hostedZone: existingHostedZone,
       domainName: domainNames[awsAccount],
-      subdomainName: Constants.SUBDOMAIN_NAME,
     });
   }
 }
