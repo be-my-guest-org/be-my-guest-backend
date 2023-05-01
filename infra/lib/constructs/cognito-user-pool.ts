@@ -11,10 +11,12 @@ import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Constants } from "../constants/constants";
+import { cognitoDomainPrefixes } from "../constants/domain-names";
 
 export interface CognitoUserPoolProps {
   readonly postConfirmationLambda: IFunction;
   readonly googleOauthClientId: string;
+  readonly environmentName: string;
 }
 
 export class CognitoUserPool extends Construct {
@@ -59,7 +61,7 @@ export class CognitoUserPool extends Construct {
 
     cognitoUserPool.addDomain("cognito-domain", {
       cognitoDomain: {
-        domainPrefix: "be-my-guest",
+        domainPrefix: cognitoDomainPrefixes[props.environmentName],
       },
     });
 

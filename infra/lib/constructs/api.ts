@@ -129,6 +129,7 @@ export class Api extends Construct {
       integration: integration,
     });
 
+    // TODO weird A-record is produced in dev with this configuration, check it 
     new ARecord(this, "BeMyGuestApiAliasRecord", {
       zone: props.hostedZone,
       recordName: props.subdomainName,
@@ -138,10 +139,6 @@ export class Api extends Construct {
           domain.regionalHostedZoneId
         )
       ),
-    });
-
-    new cdk.CfnOutput(this, "apiUrl", {
-      value: httpApi.url!,
     });
   }
 }

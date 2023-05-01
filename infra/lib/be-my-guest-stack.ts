@@ -5,7 +5,9 @@ import {
 } from "aws-cdk-lib/aws-certificatemanager";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
-import { Constants } from "./constants/constants";
+import { Constants, Environments } from "./constants/constants";
+import { domainNames } from "./constants/domain-names";
+import { hostedZones } from "./constants/hosted-zones";
 import { Api } from "./constructs/api";
 import { CognitoUserPool } from "./constructs/cognito-user-pool";
 import { DotNetLambdaFunction } from "./constructs/dot-net-lambda-function";
@@ -15,11 +17,11 @@ export class BeMyGuestStack extends cdk.Stack {
   private readonly TABLE_NAME_ENV_VAR = "DynamoDb__TableName";
   private readonly GSI1_NAME_ENV_VAR = "DynamoDb__Gsi1Name";
   private readonly GSI2_NAME_ENV_VAR = "DynamoDb__Gsi2Name";
-  private readonly HOSTED_ZONE_NAME = "jordangottardo.com";
-  private readonly HOSTED_ZONE_ID = "Z027129813KQ3AFNBS4SO";
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
+
+    const awsAccount = props.env?.account ?? Environments.DEV;
 
     const postUserConfirmationLambda = new DotNetLambdaFunction(
       this,
@@ -33,6 +35,7 @@ export class BeMyGuestStack extends cdk.Stack {
     const userPool = new CognitoUserPool(this, "BeMyGuestUserPool", {
       postConfirmationLambda: postUserConfirmationLambda.lambdaFunction,
       googleOauthClientId: Constants.GOOGLE_OAUTH_CLIENT_ID,
+      environmentName: awsAccount
     });
 
     const beMyGuestLambda = new DotNetLambdaFunction(this, "BeMyGuestLambda", {
@@ -70,13 +73,13 @@ export class BeMyGuestStack extends cdk.Stack {
       this,
       "HostedZone",
       {
-        hostedZoneId: this.HOSTED_ZONE_ID,
-        zoneName: this.HOSTED_ZONE_NAME,
+        hostedZoneId: hostedZones[awsAccount].id,
+        zoneName: hostedZones[awsAccount].name,
       }
     );
 
     const certificate = new Certificate(this, "BeMyGuestCertificate", {
-      domainName: Constants.DOMAIN_NAME,
+      domainName: domainNames[awsAccount],
       validation: CertificateValidation.fromDns(existingHostedZone),
     });
 
@@ -86,7 +89,7 @@ export class BeMyGuestStack extends cdk.Stack {
       lambdaFunction: beMyGuestLambda.lambdaFunction,
       certificate: certificate,
       hostedZone: existingHostedZone,
-      domainName: Constants.DOMAIN_NAME,
+      domainName: domainNames[awsAccount],
       subdomainName: Constants.SUBDOMAIN_NAME,
     });
   }
