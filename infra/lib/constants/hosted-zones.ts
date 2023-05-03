@@ -6,8 +6,8 @@ export interface HostedZones {
 
 export const hostedZones: HostedZones = {
   [Environments.PROD]: {
-    name: "jordangottardo.com",
-    id: "TODO",
+    name: "be-my-guest.jordangottardo.com",
+    id: "Z000944721I1OB93SFIHU",
   },
   [Environments.DEV]: {
     name: "dev.be-my-guest.jordangottardo.com",
