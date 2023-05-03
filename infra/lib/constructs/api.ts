@@ -21,7 +21,6 @@ export interface ApiProps {
   readonly certificate: ICertificate;
   readonly hostedZone: IHostedZone;
   readonly domainName: string;
-  readonly subdomainName: string;
 }
 
 export class Api extends Construct {
@@ -107,7 +106,7 @@ export class Api extends Construct {
     httpApi.addRoutes({
       path: `${this.API_BASE_PATH}/users`,
       methods: [HttpMethod.GET],
-      integration: integration
+      integration: integration,
     });
 
     httpApi.addRoutes({
@@ -122,7 +121,6 @@ export class Api extends Construct {
       integration: integration,
     });
 
-    
     httpApi.addRoutes({
       path: `${this.API_BASE_PATH}/events/{eventId}/join`,
       methods: [HttpMethod.POST],
@@ -131,17 +129,12 @@ export class Api extends Construct {
 
     new ARecord(this, "BeMyGuestApiAliasRecord", {
       zone: props.hostedZone,
-      recordName: props.subdomainName,
       target: RecordTarget.fromAlias(
         new ApiGatewayv2DomainProperties(
           domain.regionalDomainName,
           domain.regionalHostedZoneId
         )
       ),
-    });
-
-    new cdk.CfnOutput(this, "apiUrl", {
-      value: httpApi.url!,
     });
   }
 }
